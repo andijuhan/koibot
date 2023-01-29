@@ -49,12 +49,32 @@ io.on('connection', (socket) => {
 let ob = 100;
 let kb = 50;
 let lelangStart = true;
+const waktuLelang = 24;
 
 con.connect(function (err) {
    if (err) throw err;
    console.log('Connected to database!');
+   //sesuaikan tanggal
+   const dateNow = new Date();
+   const dateAddHour = dateNow.setHours(dateNow.getHours() + waktuLelang);
+   const dateAddResult = new Date(dateAddHour).toLocaleString('id-ID', {
+      timeZone: 'Asia/Bangkok',
+      dateStyle: 'full',
+      timeStyle: 'short',
+   });
+
+   console.log(dateAddResult);
+
    client.on('message', async (message) => {
       //pengaturan lelang baru
+
+      if (message.body.toLocaleLowerCase().includes('mulai lelang')) {
+         console.log('lelang dimulai');
+         sisaWaktuLelang((str) => {
+            message.reply(str);
+         });
+      }
+
       const chats = await message.getChat();
       //cek apakah chat berisi OB?
       if (
@@ -144,7 +164,7 @@ con.connect(function (err) {
             });
          });
       }
-      //cek apakah chat berisi bin?
+      //jump bid
       const jumpBidPrice = [
          500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600,
          1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600, 2700, 2800,
@@ -160,11 +180,6 @@ con.connect(function (err) {
       const jumpBid = jumpBidPrice.find((num) => {
          return num === Number(messageArr[1]);
       });
-
-      console.log(messageArr);
-      console.log(messageArr[0]);
-      console.log(messageArr[1]);
-      console.log(jumpBid);
 
       if (
          jumpBid >= 500 &&
@@ -226,8 +241,57 @@ con.connect(function (err) {
             client.sendMessage(message.from, rekapStr);
          });
       };
+
+      const bidWinnerNotif = () => {
+         //notif to group
+         //notif to user
+      };
    });
 });
+
+const sisaWaktuLelang = (timeNotif, bidWinnerNotif) => {
+   // Set target date and time (1 hour from now)
+   var targetTime = new Date(
+      new Date().getTime() + 1000 * 60 * (waktuLelang * 60)
+   );
+   let sendMsg = false;
+   // Update the count down every 1 second
+   var x = setInterval(function () {
+      // Get current date and time
+      var currentTime = new Date();
+
+      // Calculate the difference in milliseconds
+      var diff = targetTime - currentTime;
+
+      // Time calculations for minutes and seconds
+      var minutes = Math.floor(
+         (diff % (1000 * 60 * (waktuLelang * 60))) / (1000 * 60)
+      );
+      var seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      if (minutes === 10 && sendMsg === false) {
+         timeNotif('sisa waktu 10 menit lagi');
+         sendMsg = true;
+      }
+      if (minutes === 9) sendMsg = false;
+
+      if (minutes === 5 && sendMsg === false) {
+         timeNotif('sisa waktu 5 menit lagi');
+         sendMsg = true;
+      }
+      if (minutes === 4) sendMsg = false;
+
+      // If the count down is finished, write some text
+      if (diff < 0) {
+         clearInterval(x);
+         //waktu habis
+         if (sendMsg == false) {
+            bidWinnerNotif();
+            sendMsg = true;
+         }
+      }
+   }, 1000);
+};
 
 client.initialize();
 
