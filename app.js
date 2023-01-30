@@ -1,9 +1,12 @@
 const qrcode = require('qrcode');
+const cron = require('node-cron');
 const http = require('http');
 const socketIo = require('socket.io');
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const express = require('express');
 const mysql = require('mysql');
+
+process.env.TZ = 'Asia/Bangkok';
 
 const app = express();
 const server = http.createServer(app);
@@ -17,6 +20,7 @@ const client = new Client({
    authStrategy: new LocalAuth(),
 });
 
+//database connection
 const con = mysql.createConnection({
    host: 'localhost',
    user: 'root',
@@ -24,6 +28,7 @@ const con = mysql.createConnection({
    database: 'koibot',
 });
 
+//socket.io setup
 io.on('connection', (socket) => {
    socket.emit('message', 'Connecting...');
 
@@ -46,42 +51,88 @@ io.on('connection', (socket) => {
    });
 });
 
+const currentDate = new Date().toLocaleString('id-ID', {
+   dateStyle: 'short',
+   timeStyle: 'short',
+});
+
+const currentDateRaw = new Date();
+const hourToday = currentDateRaw.toLocaleString('id-ID', {
+   hour: '2-digit',
+   minute: '2-digit',
+});
+
+//auction setup
 let ob = 100;
 let kb = 50;
-let lelangStart = true;
-const waktuLelang = 24;
+let isAuctionStarting = true;
+const groupName = 'Rajabot Testing';
 
 con.connect(function (err) {
    if (err) throw err;
    console.log('Connected to database!');
-   //sesuaikan tanggal
-   const dateNow = new Date();
-   const dateAddHour = dateNow.setHours(dateNow.getHours() + waktuLelang);
-   const dateAddResult = new Date(dateAddHour).toLocaleString('id-ID', {
-      timeZone: 'Asia/Bangkok',
-      dateStyle: 'full',
-      timeStyle: 'short',
-   });
-
-   console.log(dateAddResult);
-
+   console.log(currentDate);
+   console.log(hourToday);
    client.on('message', async (message) => {
-      //pengaturan lelang baru
+      const chats = await message.getChat();
+      const userChat = await client.getChats();
 
-      if (message.body.toLocaleLowerCase().includes('mulai lelang')) {
-         console.log('lelang dimulai');
-         sisaWaktuLelang((str) => {
-            message.reply(str);
+      if (
+         message.body.toLocaleLowerCase().includes('lelang mulai') &&
+         chats.isGroup === false
+      ) {
+         //get group id
+         const groupObj = userChat
+            .filter((chat) => chat.isGroup && chat.name === groupName)
+            .map((chat) => {
+               return {
+                  id: chat.id,
+                  name: chat.name,
+               };
+            });
+         const groupId = groupObj[0].id.user + '@g.us';
+         console.log(groupId);
+
+         isAuctionStarting = true;
+         console.log('auction starts');
+
+         //cron for auction time ends
+         cron.schedule('36 0 * * *', function () {
+            console.log('Auction ends');
+            isAuctionStarting = false;
+            //send notification to group
+            client.sendMessage(groupId, 'Lelang berakhir');
+            auctionWinner(groupId);
+            //send notification to the auction winner
+            const sql = 'SELECT * FROM rekap';
+            con.query(sql, function (err, result) {
+               if (err) throw err;
+               result.map((item, index) => {
+                  const bidder_id = result[index].bidder_id;
+                  const kode_ikan = result[index].kode_ikan;
+                  const bid = result[index].bid;
+                  client.sendMessage(
+                     bidder_id,
+                     `selamat anda pemenang lelang ikan ${kode_ikan} dengan bid ${bid}`
+                  );
+               });
+            });
+         });
+         //send notification of remaining auction time
+         cron.schedule('50 21 * * *', function () {
+            client.sendMessage(groupId, 'Lelang akan berakhir dalam 10 menit');
+         });
+         cron.schedule('55 20 * * *', function () {
+            client.sendMessage(groupId, 'Lelang akan berakhir dalam 5 menit');
          });
       }
 
-      const chats = await message.getChat();
       //cek apakah chat berisi OB?
       if (
          message.body.toLowerCase().includes('ob') &&
          message.body.length < 14 &&
          chats.isGroup &&
-         lelangStart
+         isAuctionStarting
       ) {
          //hapus space di chat
          const messageNoSpace = message.body.toLowerCase().split(' ').join('');
@@ -118,7 +169,7 @@ con.connect(function (err) {
          message.body.toLowerCase().includes('kb') &&
          message.body.length < 14 &&
          chats.isGroup &&
-         lelangStart
+         isAuctionStarting
       ) {
          //hapus space di chat
          const messageNoSpace = message.body.toLowerCase().split(' ').join('');
@@ -185,7 +236,7 @@ con.connect(function (err) {
          jumpBid >= 500 &&
          message.body.length < 14 &&
          chats.isGroup &&
-         lelangStart
+         isAuctionStarting
       ) {
          //hapus space di chat
          const codeStr = messageArr[0];
@@ -242,56 +293,25 @@ con.connect(function (err) {
          });
       };
 
-      const bidWinnerNotif = () => {
-         //notif to group
-         //notif to user
+      const auctionWinner = (groupId) => {
+         let rekapStr =
+            '- Selamat Pemenang Lelang ke x -\n==========================\n';
+         const sql = 'SELECT * FROM rekap';
+         con.query(sql, function (err, result) {
+            if (err) throw err;
+            result.map((item, index) => {
+               const dataRekap = `Ikan ${result[
+                  index
+               ].kode_ikan.toUpperCase()} ${result[index].bid} ${
+                  result[index].bidder
+               }\n`;
+               rekapStr = rekapStr.concat(dataRekap);
+            });
+            client.sendMessage(groupId, rekapStr);
+         });
       };
    });
 });
-
-const sisaWaktuLelang = (timeNotif, bidWinnerNotif) => {
-   // Set target date and time (1 hour from now)
-   var targetTime = new Date(
-      new Date().getTime() + 1000 * 60 * (waktuLelang * 60)
-   );
-   let sendMsg = false;
-   // Update the count down every 1 second
-   var x = setInterval(function () {
-      // Get current date and time
-      var currentTime = new Date();
-
-      // Calculate the difference in milliseconds
-      var diff = targetTime - currentTime;
-
-      // Time calculations for minutes and seconds
-      var minutes = Math.floor(
-         (diff % (1000 * 60 * (waktuLelang * 60))) / (1000 * 60)
-      );
-      var seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-      if (minutes === 10 && sendMsg === false) {
-         timeNotif('sisa waktu 10 menit lagi');
-         sendMsg = true;
-      }
-      if (minutes === 9) sendMsg = false;
-
-      if (minutes === 5 && sendMsg === false) {
-         timeNotif('sisa waktu 5 menit lagi');
-         sendMsg = true;
-      }
-      if (minutes === 4) sendMsg = false;
-
-      // If the count down is finished, write some text
-      if (diff < 0) {
-         clearInterval(x);
-         //waktu habis
-         if (sendMsg == false) {
-            bidWinnerNotif();
-            sendMsg = true;
-         }
-      }
-   }, 1000);
-};
 
 client.initialize();
 
