@@ -1,10 +1,12 @@
+const fs = require('fs');
 const qrcode = require('qrcode');
 const cron = require('node-cron');
 const http = require('http');
 const socketIo = require('socket.io');
-const { Client, LocalAuth } = require('whatsapp-web.js');
+const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
 const express = require('express');
 const mysql = require('mysql');
+const { measureMemory } = require('vm');
 
 process.env.TZ = 'Asia/Bangkok';
 
@@ -17,6 +19,10 @@ app.get('/', (req, res) => {
 });
 
 const client = new Client({
+   puppeteer: {
+      executablePath:
+         'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+   },
    authStrategy: new LocalAuth(),
 });
 
@@ -65,7 +71,10 @@ const hourToday = currentDateRaw.toLocaleString('id-ID', {
 //auction setup
 let ob = 100;
 let kb = 50;
-let isAuctionStarting = true;
+let isAuctionStarting = false;
+let info = '';
+let aMediaPath = '';
+let aMediaDesc = '';
 const groupName = 'Rajabot Testing';
 
 con.connect(function (err) {
@@ -77,27 +86,126 @@ con.connect(function (err) {
       const chats = await message.getChat();
       const userChat = await client.getChats();
 
+      //get group id
+      const groupObj = userChat
+         .filter((chat) => chat.isGroup && chat.name === groupName)
+         .map((chat) => {
+            return {
+               id: chat.id,
+               name: chat.name,
+            };
+         });
+      const groupId = groupObj[0].id.user + '@g.us';
+
+      //setup media
+
       if (
-         message.body.toLocaleLowerCase().includes('lelang mulai') &&
+         message.body.toLocaleLowerCase().includes('kode a') &&
+         message.hasMedia &&
          chats.isGroup === false
       ) {
-         //get group id
-         const groupObj = userChat
-            .filter((chat) => chat.isGroup && chat.name === groupName)
-            .map((chat) => {
-               return {
-                  id: chat.id,
-                  name: chat.name,
-               };
+         const attachmentData = await message.downloadMedia();
+         const ext = attachmentData.mimetype.split('/');
+         //simpan media ke server
+         aMediaPath = './upload/' + 'a.' + ext[1];
+         aMediaDesc = message.body;
+
+         fs.writeFileSync(
+            './upload/' + 'a.' + ext[1],
+            attachmentData.data,
+            'base64',
+            function (err) {
+               if (err) {
+                  console.log(err);
+               }
+            }
+         );
+
+         client.sendMessage(groupId, attachmentData, {
+            caption: message.body,
+         });
+      }
+
+      //info kode ikan
+      if (
+         message.body.toLocaleLowerCase().includes('info a') &&
+         chats.isGroup &&
+         aMediaPath.length > 0
+      ) {
+         const media = MessageMedia.fromFilePath(aMediaPath);
+
+         client.sendMessage(message.from, 'Downloading media...');
+         setTimeout(() => {
+            client.sendMessage(message.from, media, {
+               caption: aMediaDesc,
             });
-         const groupId = groupObj[0].id.user + '@g.us';
-         console.log(groupId);
+         }, 2000);
+      }
+
+      //setup info lelang
+      if (message.body.includes('#LELANG') && chats.isGroup === false) {
+         info = message.body;
+         if (info.length > 20) console.log('info lelang tersimpan.');
+         client.sendMessage(message.from, 'Info lelang tersimpan');
+         client.sendMessage(
+            message.from,
+            'ketik : lelang mulai (jumlah ikan yg di lelang)\nContoh : lelang mulai 10'
+         );
+      }
+      //when the auction starts
+      if (
+         message.body.toLocaleLowerCase().includes('lelang mulai') &&
+         chats.isGroup === false &&
+         info.length > 20
+      ) {
+         //kode ikan
+         const rawMsg = message.body.toString().split(' ');
+         const numOfFish = Number(rawMsg[2]);
+         const fishCodes = generateFishCode(Number(numOfFish));
+         console.log(fishCodes);
+         if (fishCodes.length >= 1) {
+            //bersihkan file
+            const folder = './upload/';
+            fs.readdir(folder, (err, files) => {
+               if (err) throw err;
+
+               for (const file of files) {
+                  console.log(file + ' : File Deleted Successfully.');
+                  fs.unlinkSync(folder + file);
+               }
+            });
+            //bersihkan tabel dulu
+            con.query('DELETE FROM rekap', function (err, result) {
+               if (err) throw err;
+               console.log('tabel rekap sudah dibersihkan');
+               //insert kode ikan
+               let sendToGroup = false;
+               fishCodes.map((item, index) => {
+                  const sql = `INSERT INTO rekap (kode_ikan) VALUES ('${fishCodes[index]}')`;
+                  con.query(sql, function (err, result) {
+                     if (err) throw err;
+                     console.log('sukses');
+                     if (sendToGroup === false) {
+                        //confirm
+                        client.sendMessage(
+                           message.from,
+                           'Lelang sedang dimulai. Info lelang hari ini sudah dikirim ke group.'
+                        );
+                        //send message to group
+                        client.sendMessage(groupId, info);
+                        sendToGroup = true;
+                     }
+                  });
+               });
+            });
+         }
 
          isAuctionStarting = true;
          console.log('auction starts');
 
          //cron for auction time ends
-         cron.schedule('36 0 * * *', function () {
+         cron.schedule('0 21 * * *', function () {
+            info = '';
             console.log('Auction ends');
             isAuctionStarting = false;
             //send notification to group
@@ -119,7 +227,7 @@ con.connect(function (err) {
             });
          });
          //send notification of remaining auction time
-         cron.schedule('50 21 * * *', function () {
+         cron.schedule('50 20 * * *', function () {
             client.sendMessage(groupId, 'Lelang akan berakhir dalam 10 menit');
          });
          cron.schedule('55 20 * * *', function () {
@@ -127,7 +235,7 @@ con.connect(function (err) {
          });
       }
 
-      //cek apakah chat berisi OB?
+      //ob command
       if (
          message.body.toLowerCase().includes('ob') &&
          message.body.length < 14 &&
@@ -164,7 +272,7 @@ con.connect(function (err) {
          });
       }
 
-      //cek apakah chat berisi KB?
+      //kb command
       if (
          message.body.toLowerCase().includes('kb') &&
          message.body.length < 14 &&
@@ -198,7 +306,7 @@ con.connect(function (err) {
                         if (confirm === false) {
                            message.reply('Bid diterima');
                            confirm = true;
-                           //kirim rekap
+                           //send rekap
                            setTimeout(() => rekap(), 3000);
                            if (message.author !== bidder_id) {
                               client.sendMessage(
@@ -215,7 +323,8 @@ con.connect(function (err) {
             });
          });
       }
-      //jump bid
+
+      //jump bid command
       const jumpBidPrice = [
          500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600,
          1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600, 2700, 2800,
@@ -276,7 +385,7 @@ con.connect(function (err) {
             });
          });
       }
-
+      //for to display summary data
       const rekap = () => {
          let rekapStr =
             '- Rekap Bid Tertinggi Sementara -\n==========================\n';
@@ -292,7 +401,7 @@ con.connect(function (err) {
             client.sendMessage(message.from, rekapStr);
          });
       };
-
+      //to display auction Winner data
       const auctionWinner = (groupId) => {
          let rekapStr =
             '- Selamat Pemenang Lelang ke x -\n==========================\n';
@@ -312,6 +421,14 @@ con.connect(function (err) {
       };
    });
 });
+
+const generateFishCode = (num) => {
+   if (num > 0 && num <= 20) {
+      const alpha = Array.from(Array(num)).map((e, i) => i + 65);
+      const alphabet = alpha.map((x) => String.fromCharCode(x));
+      return alphabet;
+   }
+};
 
 client.initialize();
 
