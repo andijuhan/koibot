@@ -6,7 +6,9 @@ const socketIo = require('socket.io');
 const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
 const express = require('express');
 const mysql = require('mysql');
-const { measureMemory } = require('vm');
+const db = require('./helpers/db');
+const wa = require('./helpers/wa');
+const dt = require('./data/data');
 
 process.env.TZ = 'Asia/Bangkok';
 
@@ -57,17 +59,6 @@ io.on('connection', (socket) => {
    });
 });
 
-const currentDate = new Date().toLocaleString('id-ID', {
-   dateStyle: 'short',
-   timeStyle: 'short',
-});
-
-const currentDateRaw = new Date();
-const hourToday = currentDateRaw.toLocaleString('id-ID', {
-   hour: '2-digit',
-   minute: '2-digit',
-});
-
 //auction setup
 let ob = 100;
 let kb = 50;
@@ -79,47 +70,33 @@ const groupName = 'Rajabot Testing';
 
 con.connect(function (err) {
    if (err) throw err;
-   console.log('Connected to database!');
-   console.log(currentDate);
-   console.log(hourToday);
+
    client.on('message', async (message) => {
+      const messageLwcase = message.body.toLocaleLowerCase();
+      const mediaCode = messageLwcase.slice(0, 6);
+      const setMedia = await db.setMedia(mediaCode);
       const chats = await message.getChat();
       const userChat = await client.getChats();
 
       //get group id
-      const groupObj = userChat
-         .filter((chat) => chat.isGroup && chat.name === groupName)
-         .map((chat) => {
-            return {
-               id: chat.id,
-               name: chat.name,
-            };
-         });
-      const groupId = groupObj[0].id.user + '@g.us';
+      const groupId = wa.getGroupId(userChat, groupName);
 
       //setup media
-
-      if (
-         message.body.toLocaleLowerCase().includes('kode a') &&
-         message.hasMedia &&
-         chats.isGroup === false
-      ) {
+      if (setMedia !== false && message.hasMedia && chats.isGroup === false) {
          const attachmentData = await message.downloadMedia();
+         //dapatkan ekstensi media
          const ext = attachmentData.mimetype.split('/');
-         //simpan media ke server
-         aMediaPath = './upload/' + 'a.' + ext[1];
-         aMediaDesc = message.body;
-
-         fs.writeFileSync(
-            './upload/' + 'a.' + ext[1],
-            attachmentData.data,
-            'base64',
-            function (err) {
-               if (err) {
-                  console.log(err);
-               }
+         //simpan info media ke database
+         const path = './upload/' + setMedia + ext[1];
+         const desc = message.body;
+         console.log(ext + path);
+         db.setMediaPath(path, desc, setMedia);
+         //simpan ke server
+         fs.writeFileSync(path, attachmentData.data, 'base64', function (err) {
+            if (err) {
+               console.log(err);
             }
-         );
+         });
 
          client.sendMessage(groupId, attachmentData, {
             caption: message.body,
@@ -154,15 +131,15 @@ con.connect(function (err) {
       }
       //when the auction starts
       if (
-         message.body.toLocaleLowerCase().includes('lelang mulai') &&
+         messageLwcase.includes('lelang mulai') &&
          chats.isGroup === false &&
          info.length > 20
       ) {
          //kode ikan
          const rawMsg = message.body.toString().split(' ');
          const numOfFish = Number(rawMsg[2]);
-         const fishCodes = generateFishCode(Number(numOfFish));
-         console.log(fishCodes);
+         const fishCodes = wa.generateFishCode(Number(numOfFish));
+
          if (fishCodes.length >= 1) {
             //bersihkan file
             const folder = './upload/';
@@ -325,19 +302,8 @@ con.connect(function (err) {
       }
 
       //jump bid command
-      const jumpBidPrice = [
-         500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600,
-         1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600, 2700, 2800,
-         2900, 3000, 3100, 3200, 3300, 3400, 3500, 3600, 3700, 3800, 3900, 4000,
-         4100, 4200, 4300, 4400, 4500, 4600, 4700, 4800, 4900, 5000, 5100, 5200,
-         5300, 5400, 5500, 5600, 5700, 5800, 5900, 6000, 6100, 6200, 6300, 6400,
-         6500, 6600, 6700, 6800, 6900, 7000, 7100, 7200, 7300, 7400, 7500, 7600,
-         7700, 7800, 7900, 8000, 8100, 8200, 8300, 8400, 8500, 8600, 8700, 8800,
-         8900, 9000, 9100, 9200, 9300, 9400, 9500, 9600, 9700, 9800, 9900,
-         10000,
-      ];
-      const messageArr = message.body.toLowerCase().split(' ');
-      const jumpBid = jumpBidPrice.find((num) => {
+      const messageArr = messageLwcase.split(' ');
+      const jumpBid = dt.jumpBidPrice.find((num) => {
          return num === Number(messageArr[1]);
       });
 
@@ -421,14 +387,6 @@ con.connect(function (err) {
       };
    });
 });
-
-const generateFishCode = (num) => {
-   if (num > 0 && num <= 20) {
-      const alpha = Array.from(Array(num)).map((e, i) => i + 65);
-      const alphabet = alpha.map((x) => String.fromCharCode(x));
-      return alphabet;
-   }
-};
 
 client.initialize();
 
