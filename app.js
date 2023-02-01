@@ -75,13 +75,14 @@ con.connect(function (err) {
       const messageLwcase = message.body.toLocaleLowerCase();
       const mediaCode = messageLwcase.slice(0, 6);
       const setMedia = await db.setMedia(mediaCode);
+      const mediaInfo = await db.getMediaInfo(messageLwcase);
       const chats = await message.getChat();
       const userChat = await client.getChats();
 
       //get group id
       const groupId = wa.getGroupId(userChat, groupName);
 
-      //setup media
+      //setup media - admin
       if (setMedia !== false && message.hasMedia && chats.isGroup === false) {
          const attachmentData = await message.downloadMedia();
          //dapatkan ekstensi media
@@ -89,7 +90,7 @@ con.connect(function (err) {
          //simpan info media ke database
          const path = './upload/' + setMedia + ext[1];
          const desc = message.body;
-         console.log(ext + path);
+
          db.setMediaPath(path, desc, setMedia);
          //simpan ke server
          fs.writeFileSync(path, attachmentData.data, 'base64', function (err) {
@@ -98,23 +99,31 @@ con.connect(function (err) {
             }
          });
 
-         client.sendMessage(groupId, attachmentData, {
-            caption: message.body,
+         message.reply('Media berhasil disimpan.');
+      }
+
+      //kirim media ke group - admin
+      if (messageLwcase.includes('kirim info') && chats.isGroup === false) {
+         const mediaInfoArr = await db.getAllMediaInfo();
+
+         mediaInfoArr.map((item, index) => {
+            const media = MessageMedia.fromFilePath(mediaInfoArr[index].path);
+            setTimeout(() => {
+               client.sendMessage(groupId, media, {
+                  caption: mediaInfoArr[index].media_desc,
+               });
+            }, 2000 * index);
          });
       }
 
-      //info kode ikan
-      if (
-         message.body.toLocaleLowerCase().includes('info a') &&
-         chats.isGroup &&
-         aMediaPath.length > 0
-      ) {
-         const media = MessageMedia.fromFilePath(aMediaPath);
+      //info kode ikan - user
+      if (mediaInfo !== false && chats.isGroup) {
+         const media = MessageMedia.fromFilePath(mediaInfo.path);
 
-         client.sendMessage(message.from, 'Downloading media...');
+         client.sendMessage(message.from, 'Downloading media . . .');
          setTimeout(() => {
             client.sendMessage(message.from, media, {
-               caption: aMediaDesc,
+               caption: mediaInfo.media_desc,
             });
          }, 2000);
       }
@@ -133,74 +142,69 @@ con.connect(function (err) {
       if (
          messageLwcase.includes('lelang mulai') &&
          chats.isGroup === false &&
-         info.length > 20
+         info > 20
       ) {
          //kode ikan
-         const rawMsg = message.body.toString().split(' ');
-         const numOfFish = Number(rawMsg[2]);
+         const messageToArr = message.body.split(' ');
+         const numOfFish = Number(messageToArr[2]);
          const fishCodes = wa.generateFishCode(Number(numOfFish));
+         console.log(fishCodes);
 
          if (fishCodes.length >= 1) {
             //bersihkan file
             const folder = './upload/';
             fs.readdir(folder, (err, files) => {
                if (err) throw err;
-
                for (const file of files) {
                   console.log(file + ' : File Deleted Successfully.');
                   fs.unlinkSync(folder + file);
                }
             });
-            //bersihkan tabel dulu
-            con.query('DELETE FROM rekap', function (err, result) {
-               if (err) throw err;
-               console.log('tabel rekap sudah dibersihkan');
-               //insert kode ikan
-               let sendToGroup = false;
+            //bersihkan tabel
+            db.cleanRekapData();
+            //insert kode ikan
+            let sendToGroup = false;
+            setTimeout(() => {
                fishCodes.map((item, index) => {
-                  const sql = `INSERT INTO rekap (kode_ikan) VALUES ('${fishCodes[index]}')`;
-                  con.query(sql, function (err, result) {
-                     if (err) throw err;
-                     console.log('sukses');
-                     if (sendToGroup === false) {
-                        //confirm
-                        client.sendMessage(
-                           message.from,
-                           'Lelang sedang dimulai. Info lelang hari ini sudah dikirim ke group.'
-                        );
-                        //send message to group
-                        client.sendMessage(groupId, info);
-                        sendToGroup = true;
-                     }
-                  });
+                  db.fillRekap(fishCodes[index]);
+                  if (sendToGroup === false) {
+                     //confirm
+                     client.sendMessage(
+                        message.from,
+                        'Lelang telah dimulai. Info lelang sudah dikirim ke group.'
+                     );
+                     //send message to group
+                     client.sendMessage(groupId, info);
+                     sendToGroup = true;
+                  }
                });
-            });
+            }, 3000);
          }
 
          isAuctionStarting = true;
-         console.log('auction starts');
+         console.log('Lelang telah dimulai');
 
-         //cron for auction time ends
-         cron.schedule('0 21 * * *', function () {
+         //jalankan cron job
+         cron.schedule('46 21 * * *', async function () {
             info = '';
-            console.log('Auction ends');
+            console.log('Lelang berakhir');
             isAuctionStarting = false;
-            //send notification to group
+            //kirim notif ke grup
             client.sendMessage(groupId, 'Lelang berakhir');
             auctionWinner(groupId);
-            //send notification to the auction winner
-            const sql = 'SELECT * FROM rekap';
-            con.query(sql, function (err, result) {
-               if (err) throw err;
-               result.map((item, index) => {
-                  const bidder_id = result[index].bidder_id;
-                  const kode_ikan = result[index].kode_ikan;
-                  const bid = result[index].bid;
+            //kirim notif ke pemenang lelang
+            const rekapData = await db.getAllRekapData();
+
+            rekapData?.map((item, index) => {
+               const bidder_id = rekapData[index].bidder_id;
+               const kode_ikan = rekapData[index].kode_ikan;
+               const bid = rekapData[index].bid;
+               if (bidder_id !== null) {
                   client.sendMessage(
                      bidder_id,
-                     `selamat anda pemenang lelang ikan ${kode_ikan} dengan bid ${bid}`
+                     `selamat Anda pemenang lelang ikan ${kode_ikan} dengan bid ${bid}`
                   );
-               });
+               }
             });
          });
          //send notification of remaining auction time
@@ -240,7 +244,7 @@ con.connect(function (err) {
                            message.reply('OB diterima');
                            confirm = true;
                            //kirim rekap
-                           setTimeout(() => rekap(), 3000);
+                           setTimeout(() => rekap(groupId), 3000);
                         }
                      });
                   }
@@ -284,7 +288,7 @@ con.connect(function (err) {
                            message.reply('Bid diterima');
                            confirm = true;
                            //send rekap
-                           setTimeout(() => rekap(), 3000);
+                           setTimeout(() => rekap(groupId), 3000);
                            if (message.author !== bidder_id) {
                               client.sendMessage(
                                  bidder_id,
@@ -334,7 +338,7 @@ con.connect(function (err) {
                               message.reply('Bid diterima');
                               confirm = true;
                               //kirim rekap
-                              setTimeout(() => rekap(), 3000);
+                              setTimeout(() => rekap(groupId), 3000);
                               if (message.author !== bidder_id) {
                                  client.sendMessage(
                                     bidder_id,
@@ -351,42 +355,42 @@ con.connect(function (err) {
             });
          });
       }
-      //for to display summary data
-      const rekap = () => {
-         let rekapStr =
-            '- Rekap Bid Tertinggi Sementara -\n==========================\n';
-         const sql = 'SELECT * FROM rekap';
-         con.query(sql, function (err, result) {
-            if (err) throw err;
-            result.map((item, index) => {
-               const dataRekap = `${result[index].kode_ikan.toUpperCase()} = ${
-                  result[index].bid
-               } ${result[index].bidder}\n`;
-               rekapStr = rekapStr.concat(dataRekap);
-            });
-            client.sendMessage(message.from, rekapStr);
-         });
-      };
-      //to display auction Winner data
-      const auctionWinner = (groupId) => {
-         let rekapStr =
-            '- Selamat Pemenang Lelang ke x -\n==========================\n';
-         const sql = 'SELECT * FROM rekap';
-         con.query(sql, function (err, result) {
-            if (err) throw err;
-            result.map((item, index) => {
-               const dataRekap = `Ikan ${result[
-                  index
-               ].kode_ikan.toUpperCase()} ${result[index].bid} ${
-                  result[index].bidder
-               }\n`;
-               rekapStr = rekapStr.concat(dataRekap);
-            });
-            client.sendMessage(groupId, rekapStr);
-         });
-      };
    });
 });
+
+const rekap = async (groupId) => {
+   let rekapStr =
+      '- Rekap Bid Tertinggi Sementara -\n==========================\n';
+
+   const rekap = await db.getAllRekapData();
+   rekap.map((item, index) => {
+      const bidder_id = rekap[index].bidder_id;
+      const dataRekap = `${rekap[index].kode_ikan.toUpperCase()} = ${
+         rekap[index].bid
+      } ${rekap[index].bidder}\n`;
+      if (bidder_id !== null) {
+         rekapStr = rekapStr.concat(dataRekap);
+      }
+   });
+   client.sendMessage(groupId, rekapStr);
+};
+
+const auctionWinner = async (groupId) => {
+   let rekapStr =
+      '- Selamat Pemenang Lelang ke x -\n==========================\n';
+   const rekap = await db.getAllRekapData();
+
+   rekap?.map((item, index) => {
+      const bidder_id = rekap[index].bidder_id;
+      const dataRekap = `Ikan ${rekap[index].kode_ikan.toUpperCase()} ${
+         rekap[index].bid
+      } ${rekap[index].bidder}\n`;
+      if (bidder_id !== null) {
+         rekapStr = rekapStr.concat(dataRekap);
+      }
+   });
+   client.sendMessage(groupId, rekapStr);
+};
 
 client.initialize();
 
