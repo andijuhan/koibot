@@ -56,31 +56,18 @@ const cleanRekapData = async () => {
    await connection.query('DELETE FROM `rekap`');
 };
 
-const resetMedia = async () => {
-   const codes = [
-      'a',
-      'b',
-      'c',
-      'd',
-      'e',
-      'f',
-      'g',
-      'h',
-      'i',
-      'j',
-      'k',
-      'l',
-      'm',
-      'n',
-      'o',
-   ];
+const resetMedia = async (codes) => {
    const connection = await createConnection();
    await connection.query('DELETE FROM `media`');
    setTimeout(() => {
       codes.map(async (item, index) => {
          await connection.execute(
             'INSERT INTO media (command, reply, info) VALUES (?, ?, ?)',
-            [`kode ${codes[index]}`, `${codes[index]}.`, `info ${codes[index]}`]
+            [
+               `kode ${codes[index].toLocaleLowerCase()}`,
+               `${codes[index].toLocaleLowerCase()}.`,
+               `info ${codes[index].toLocaleLowerCase()}`,
+            ]
          );
       });
    }, 3000);

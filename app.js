@@ -228,7 +228,7 @@ client.on('message', async (message) => {
             setTimeout(() => {
                client.sendMessage(message.from, '*[BOT]* Reset database . . .');
                db.cleanRekapData();
-               db.resetMedia();
+               db.resetMedia(fishCodes);
             }, 4000);
 
             //insert kode ikan
