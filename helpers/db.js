@@ -43,7 +43,9 @@ const getMediaInfo = async (info) => {
 
 const getAllMediaInfo = async () => {
    const connection = await createConnection();
-   const [rows] = await connection.execute('SELECT * FROM `media`');
+   const [rows] = await connection.execute(
+      'SELECT * FROM `media` WHERE `path` IS NOT NULL'
+   );
    if (rows.length > 0) {
       return rows;
    } else return false;
@@ -52,6 +54,36 @@ const getAllMediaInfo = async () => {
 const cleanRekapData = async () => {
    const connection = await createConnection();
    await connection.query('DELETE FROM `rekap`');
+};
+
+const resetMedia = async () => {
+   const codes = [
+      'a',
+      'b',
+      'c',
+      'd',
+      'e',
+      'f',
+      'g',
+      'h',
+      'i',
+      'j',
+      'k',
+      'l',
+      'm',
+      'n',
+      'o',
+   ];
+   const connection = await createConnection();
+   await connection.query('DELETE FROM `media`');
+   setTimeout(() => {
+      codes.map(async (item, index) => {
+         await connection.execute(
+            'INSERT INTO media (command, reply, info) VALUES (?, ?, ?)',
+            [`kode ${codes[index]}`, `${codes[index]}.`, `info ${codes[index]}`]
+         );
+      });
+   }, 3000);
 };
 
 const fillRekap = async (code) => {
@@ -67,6 +99,25 @@ const getAllRekapData = async () => {
    } else return false;
 };
 
+const checkBid = async (code) => {
+   const connection = await createConnection();
+   const [rows] = await connection.execute(
+      'SELECT * FROM `rekap` WHERE `kode_ikan` = ?',
+      [code]
+   );
+   if (rows.length > 0) {
+      return rows;
+   } else return false;
+};
+
+const setRekap = async (bid, bidder, bidder_id, kode_ikan) => {
+   const connection = await createConnection();
+   await connection.execute(
+      'UPDATE `rekap` SET `bid` = ?, bidder = ?, bidder_id = ? WHERE kode_ikan = ?',
+      [bid, bidder, bidder_id, kode_ikan]
+   );
+};
+
 module.exports = {
    setMedia,
    setMediaPath,
@@ -75,4 +126,7 @@ module.exports = {
    cleanRekapData,
    fillRekap,
    getAllRekapData,
+   checkBid,
+   setRekap,
+   resetMedia,
 };

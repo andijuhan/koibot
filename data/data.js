@@ -9,6 +9,9 @@ const jumpBidPrice = [
    9600, 9700, 9800, 9900, 10000,
 ];
 
+const groupName = 'Rajabot Testing';
+
 module.exports = {
    jumpBidPrice,
+   groupName,
 };

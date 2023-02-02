@@ -1,6 +1,8 @@
-const getGroupId = (userChat, groupName) => {
+const data = require('../data/data');
+
+const getGroupId = (userChat) => {
    const groupObj = userChat
-      .filter((chat) => chat.isGroup && chat.name === groupName)
+      .filter((chat) => chat.isGroup && chat.name === data.groupName)
       .map((chat) => {
          return {
             id: chat.id,
