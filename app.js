@@ -5,7 +5,6 @@ const http = require('http');
 const socketIo = require('socket.io');
 const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
 const express = require('express');
-const mysql = require('mysql');
 const db = require('./helpers/db');
 const wa = require('./helpers/wa');
 const dt = require('./data/data');
@@ -26,14 +25,6 @@ const client = new Client({
          'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
    },
    authStrategy: new LocalAuth(),
-});
-
-//database connection
-const con = mysql.createConnection({
-   host: 'localhost',
-   user: 'root',
-   password: '',
-   database: 'koibot',
 });
 
 //socket.io setup
