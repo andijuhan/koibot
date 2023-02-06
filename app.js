@@ -54,6 +54,9 @@ io.on('connection', (socket) => {
 let ob = 100;
 let kb = 50;
 let isAuctionStarting = false;
+let extraTime = false;
+let count = 0;
+let addExtraTime = false;
 let info = '';
 
 client.on('message', async (message) => {
@@ -169,46 +172,18 @@ client.on('message', async (message) => {
             isAuctionStarting = true;
 
             //jalankan cron job
-            cron.schedule('46 21 * * *', async function () {
-               info = '';
-               console.log('Lelang berakhir');
-               isAuctionStarting = false;
-               //kirim notif ke grup
-               client.sendMessage(groupId, '*[BOT]* Lelang telah berakhir.');
-               auctionWinner(groupId);
-               //kirim notif ke pemenang lelang
-               const rekapData = await db.getAllRekapData();
-               let send = false;
-               rekapData?.map((item, index) => {
-                  const bidder_id = rekapData[index].bidder_id;
-                  const kode_ikan = rekapData[index].kode_ikan;
-                  const bid = rekapData[index].bid;
-                  if (bidder_id !== null) {
-                     client.sendMessage(
-                        bidder_id,
-                        `*[BOT]* selamat Anda pemenang lelang ikan *${kode_ikan}* dengan bid *${bid}*`
-                     );
+            cron.schedule('0 21 * * *', async function () {
+               console.log('Extra Time');
+               extraTime = true;
 
-                     if (send === false) {
-                        //kirim info pembayaran
-                        send = true;
-                     }
-                  }
-               });
-            });
-            //send notification of remaining auction time
-            cron.schedule('50 20 * * *', function () {
+               //kirim notif ke grup
+               client.sendMessage(groupId, '*[BOT]* Memasuki masa extra time.');
                client.sendMessage(
                   groupId,
-                  '*[BOT]* Lelang akan berakhir dalam 10 menit'
+                  '*[BOT]* Tidak ada bid *closed* jam 21:10.'
                );
             });
-            cron.schedule('55 20 * * *', function () {
-               client.sendMessage(
-                  groupId,
-                  '*[BOT]* Lelang akan berakhir dalam 5 menit'
-               );
-            });
+
             //bersihkan file
             setTimeout(() => {
                client.sendMessage(
@@ -262,13 +237,22 @@ client.on('message', async (message) => {
    if (
       messageLwcase.includes('ob') &&
       message.body.length < 14 &&
-      chats.isGroup & isAuctionStarting
+      chats.isGroup &&
+      isAuctionStarting
    ) {
       //hapus space di chat
       const messageNoSpace = messageLwcase.split(' ').join('');
       const obPosition = messageNoSpace.search('ob');
       const codeStr = messageNoSpace.slice(0, obPosition);
       const codeArr = codeStr.split('');
+      //jika memasuki ekstra time, buat hitungan mundur 10 menit
+      //tambah waktu 10 menit jika ada yg bid
+      //jika tidak ada yg bid dalam 10 menit. akhiri sesi lelang
+      if (extraTime) {
+         //jalankan sekali
+         addExtraTime = true;
+         startTimer(groupId);
+      }
 
       let confirm = false;
       codeArr.map(async (item, index) => {
@@ -307,6 +291,16 @@ client.on('message', async (message) => {
       const obPosition = messageNoSpace.search('kb');
       const codeStr = messageNoSpace.slice(0, obPosition);
       const codeArr = codeStr.split('');
+
+      //jika memasuki ekstra time, buat hitungan mundur 10 menit
+      //tambah waktu 10 menit jika ada yg bid
+      //jika tidak ada yg bid dalam 10 menit. akhiri sesi lelang
+
+      if (extraTime) {
+         //jalankan sekali
+         addExtraTime = true;
+         startTimer(groupId);
+      }
 
       let confirm = false;
       codeArr.map(async (item, index) => {
@@ -357,6 +351,12 @@ client.on('message', async (message) => {
       //hapus space di chat
       const codeStr = messageArr[0];
       const codeArr = codeStr.split('');
+
+      if (extraTime) {
+         //jalankan sekali
+         addExtraTime = true;
+         startTimer(groupId);
+      }
 
       let confirm = false;
       codeArr.map(async (item, index) => {
@@ -422,6 +422,102 @@ client.on('message', async (message) => {
       }
    }
 });
+
+const startTimer = (groupId) => {
+   if (addExtraTime && count > 0) {
+      count += 10;
+   }
+   if (count === 0) {
+      count = 10;
+      const intervalID = setInterval(async () => {
+         count--;
+         if (count <= 0) {
+            //reset info lelang
+            info = '';
+            //akhiri sesi lelang
+            isAuctionStarting = false;
+            //notifikasi lelang telah berakhir
+            client.sendMessage(
+               groupId,
+               `*[BOT]* Lelang *closed* ${wa.currentDateTime()}`
+            );
+            auctionWinner(groupId);
+            //kirim notif ke pemenang lelang
+            const rekapData = await db.getAllRekapData();
+            let send = false;
+            rekapData?.map((item, index) => {
+               const bidder_id = rekapData[index].bidder_id;
+               const kode_ikan = rekapData[index].kode_ikan;
+               const bid = rekapData[index].bid;
+               if (bidder_id !== null) {
+                  client.sendMessage(
+                     bidder_id,
+                     `*[BOT]* selamat Anda pemenang lelang ikan *${kode_ikan}* dengan bid *${bid}*`
+                  );
+
+                  if (send === false) {
+                     //kirim info pembayaran
+                     setTimeout(() => {
+                        client.sendMessage(
+                           bidder_id,
+                           '- *PESAN OTOMATIS DARI BOT* -\n==============================\nSilahkan konfirmasi ke *admin* \nklik wa.me/6282214871668\n==============================\n\n*Pembayaran ke rekening: * \n-BCA an. Mumu Abdul muti 2990769934\n\n*Pembayaran maksimal 2 hari*\nPenitipan 6 hari, Luar pulau 12 hari\n\n*Trimakasih.*\nAdmin'
+                        );
+                     }, 3000);
+                     send = true;
+                  }
+               }
+            });
+            clearInterval(intervalID);
+         } else if (count === 9) {
+            client.sendMessage(
+               groupId,
+               '*[BOT]* Lelang *closed* dalam 9 menit.'
+            );
+         } else if (count === 8) {
+            client.sendMessage(
+               groupId,
+               '*[BOT]* Lelang *closed* dalam 8 menit.'
+            );
+         } else if (count === 7) {
+            client.sendMessage(
+               groupId,
+               '*[BOT]* Lelang *closed* dalam 7 menit.'
+            );
+         } else if (count === 6) {
+            client.sendMessage(
+               groupId,
+               '*[BOT]* Lelang *closed* dalam 6 menit.'
+            );
+         } else if (count === 5) {
+            client.sendMessage(
+               groupId,
+               '*[BOT]* Lelang *closed* dalam 5 menit.'
+            );
+         } else if (count === 4) {
+            client.sendMessage(
+               groupId,
+               '*[BOT]* Lelang *closed* dalam 4 menit.'
+            );
+         } else if (count === 3) {
+            client.sendMessage(
+               groupId,
+               '*[BOT]* Lelang *closed* dalam 3 menit.'
+            );
+         } else if (count === 2) {
+            client.sendMessage(
+               groupId,
+               '*[BOT]* Lelang *closed* dalam 2 menit.'
+            );
+         } else if (count === 1) {
+            client.sendMessage(
+               groupId,
+               '*[BOT]* Lelang *closed* dalam 1 menit.'
+            );
+         }
+      }, 1000 * 60);
+      addExtraTime = false;
+   }
+};
 
 const rekap = async (groupId) => {
    let rekapStr = `- *Rekap Bid Tertinggi Sementara ${wa.currentDateTime()}* -\n=================================\n`;
