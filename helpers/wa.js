@@ -15,7 +15,6 @@ const getGroupId = (userChat) => {
 const currentDateTime = () => {
    const currentDate = new Date().toLocaleString('id-ID', {
       dateStyle: 'full',
-      timeStyle: 'short',
    });
    return currentDate;
 };

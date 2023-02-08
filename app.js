@@ -53,7 +53,7 @@ io.on('connection', (socket) => {
 //auction setup
 let ob = 100;
 let kb = 50;
-let isAuctionStarting = false;
+let isAuctionStarting = true;
 let extraTime = false;
 let count = 0;
 let addExtraTime = false;
@@ -151,6 +151,7 @@ client.on('message', async (message) => {
                client.sendMessage(message.from, media, {
                   caption: mediaInfo.media_desc,
                });
+               mediaInfo = false;
             }, 2000);
          } else {
             message.reply(
@@ -298,7 +299,7 @@ client.on('message', async (message) => {
          const checkBid = await db.checkBid(codeArr[index]);
          const kode = codeArr[index].toLocaleUpperCase();
          if (checkBid === false) {
-            message.reply('*[BOT]* Bid Tidak SAH. Kode salah 🙏');
+            message.reply(`*[BOT]* Bid ${kode} Tidak SAH. Kode salah 🙏`);
             return;
          }
 
@@ -392,7 +393,7 @@ client.on('message', async (message) => {
          const getRekapData = await db.checkBid(codeArr[index]);
          const kode = codeArr[index].toLocaleUpperCase();
          if (getRekapData === false) {
-            message.reply('*[BOT]* Bid Tidak SAH. Kode salah 🙏');
+            message.reply(`*[BOT]* Bid ${kode} Tidak SAH. Kode salah 🙏`);
             return;
          }
 
@@ -433,9 +434,14 @@ client.on('message', async (message) => {
    let jumpBid;
    //cek apakah nilai messageToJumpBidValue tersedia?
    if (messageToJumpBidValue !== null) {
-      jumpBid = dt.jumpBidPrice.find((num) => {
-         return num === Number(messageToJumpBidValue[0]);
-      });
+      jumpBid =
+         dt.jumpBidPrice.find((num) => {
+            return num === Number(messageToJumpBidValue[0]);
+         }) | false;
+      if (jumpBid === 0) {
+         message.reply('*[BOT]* Jump Bid harus kelipatan 100.');
+         return;
+      }
    }
 
    if (jumpBid >= 100 && message.body.length < 14 && chats.isGroup) {
@@ -459,7 +465,7 @@ client.on('message', async (message) => {
          const kode = codeArr[index].toLocaleUpperCase();
 
          if (getRekapData === false) {
-            message.reply('*[BOT]* Bid Tidak SAH. Kode salah 🙏');
+            message.reply(`*[BOT]* Bid ${kode} Tidak SAH. Kode salah 🙏`);
             return;
          }
 
@@ -468,11 +474,14 @@ client.on('message', async (message) => {
             const bidder_id = getRekapData[0].bidder_id;
             if (bid === null) {
                bid = 100;
-            } else if (bid > jumpBid) {
+            }
+
+            if (bid > jumpBid || bid === jumpBid) {
                message.reply(
-                  `*[BOT]* Bid ${kode} Tidak sah. Bid harus lebih besar dari ${bid}`
+                  `*[BOT]* Bid ${kode} Tidak sah. Bid harus lebih besar dari ${bid} 🙏`
                );
-            } else if (bid < jumpBid) {
+            }
+            if (bid < jumpBid) {
                db.setRekap(
                   jumpBid,
                   message.rawData.notifyName,
@@ -629,11 +638,15 @@ const rekap = async (groupId) => {
    const rekap = await db.getAllRekapData();
    rekap.map((item, index) => {
       const bidder_id = rekap[index].bidder_id;
-      const dataRekap = `Kode *${rekap[index].kode_ikan.toUpperCase()}* Bid ${
-         rekap[index].bid
-      } Bidder *${rekap[index].bidder}* \n`;
+      const dataRekap = `Kode : *${rekap[
+         index
+      ].kode_ikan.toUpperCase()}*, Bid : ${rekap[index].bid}, Bidder : *${
+         rekap[index].bidder
+      }* \n`;
 
-      const dataRekapNull = `*${rekap[index].kode_ikan.toUpperCase()}* = \n`;
+      const dataRekapNull = `Kode : *${rekap[
+         index
+      ].kode_ikan.toUpperCase()}* . . . \n`;
 
       if (bidder_id !== null) {
          rekapStr = rekapStr.concat(dataRekap);
