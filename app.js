@@ -68,7 +68,7 @@ client.on('message', async (message) => {
    const messageLwcase = message.body.toLocaleLowerCase();
    const mediaCode = messageLwcase.slice(0, 6);
 
-   if (chats.isGroup) {
+   if (chats.isGroup == false) {
       setMedia = await db.setMedia(mediaCode);
    }
 
@@ -137,6 +137,10 @@ client.on('message', async (message) => {
 
    //info kode ikan - user
    if (mediaInfo !== false && chats.isGroup) {
+      if (isAuctionStarting === false) {
+         message.reply('*[BOT]* Lelang belum dimulai. Silahkan hubungi admin.');
+         return;
+      }
       try {
          if (fs.existsSync(mediaInfo.path)) {
             //file exists
@@ -156,6 +160,12 @@ client.on('message', async (message) => {
       } catch (err) {
          console.log(err);
       }
+   }
+
+   if (messageLwcase.includes('video') && isAuctionStarting) {
+      message.reply(
+         '*[BOT]* Untuk cek video dan deskripsi Ikan, silahkan ketik *info kode_ikan*'
+      );
    }
 
    //setup info lelang
@@ -185,7 +195,7 @@ client.on('message', async (message) => {
             isAuctionStarting = true;
 
             //jalankan cron job
-            cron.schedule('40 10 * * *', async function () {
+            cron.schedule('10 21 * * *', async function () {
                console.log('Extra Time');
                extraTime = true;
 
@@ -252,6 +262,10 @@ client.on('message', async (message) => {
       message.body.length < 14 &&
       chats.isGroup
    ) {
+      if (isAuctionStarting === false) {
+         message.reply('*[BOT]* Lelang belum dimulai. Silahkan hubungi admin.');
+         return;
+      }
       //hapus space di chat
       const messageNoSpace = messageLwcase.split(' ').join('');
       const obPosition = messageNoSpace.search('ob');
@@ -279,13 +293,17 @@ client.on('message', async (message) => {
          startTimer(groupId);
       }
 
-      let confirm = false;
       codeArr.map(async (item, index) => {
          //cek apakah nilai bid dari kode koi == 0?
          const checkBid = await db.checkBid(codeArr[index]);
+         const kode = codeArr[index].toLocaleUpperCase();
+         if (checkBid === false) {
+            message.reply('*[BOT]* Bid Tidak SAH. Kode salah 🙏');
+            return;
+         }
 
          if (checkBid?.length > 0) {
-            if (checkBid[0].bid === 0 || checkBid[0].bid === null) {
+            if (checkBid[0].bid === null) {
                db.setRekap(
                   ob,
                   message.rawData.notifyName,
@@ -293,15 +311,14 @@ client.on('message', async (message) => {
                   codeArr[index]
                );
 
-               if (confirm === false) {
-                  message.reply('*[BOT]* Bid *SAH*. Trimakasih 🤝');
-                  confirm = true;
-                  //kirim rekap
-                  setTimeout(() => rekap(groupId), 3000);
-               }
+               message.reply(`*[BOT]* Bid ${kode} *SAH*. Trimakasih 🤝`);
+            } else {
+               message.reply(`*[BOT]* Bid ${kode} Tidak SAH. Sudah ter OB 🙏.`);
             }
          }
       });
+      //kirim rekap
+      setTimeout(() => rekap(groupId), 3000);
    }
 
    //kb command
@@ -310,6 +327,10 @@ client.on('message', async (message) => {
       message.body.length < 14 &&
       chats.isGroup
    ) {
+      if (isAuctionStarting === false) {
+         message.reply('*[BOT]* Lelang belum dimulai. Silahkan hubungi admin.');
+         return;
+      }
       //hapus space di chat
       const messageNoSpace = messageLwcase.split(' ').join('');
       const obPosition = messageNoSpace.search('kb');
@@ -367,9 +388,14 @@ client.on('message', async (message) => {
          startTimer(groupId);
       }
 
-      let confirm = false;
       codeArr.map(async (item, index) => {
          const getRekapData = await db.checkBid(codeArr[index]);
+         const kode = codeArr[index].toLocaleUpperCase();
+         if (getRekapData === false) {
+            message.reply('*[BOT]* Bid Tidak SAH. Kode salah 🙏');
+            return;
+         }
+
          if (getRekapData?.length > 0) {
             let bid = getRekapData[0].bid;
             if (bid === null) {
@@ -384,26 +410,20 @@ client.on('message', async (message) => {
                codeArr[index]
             );
 
-            if (confirm === false) {
-               message.reply('*[BOT]* Bid *SAH*. Trimakasih 🤝');
-               confirm = true;
-               //send rekap
-               setTimeout(() => rekap(groupId), 3000);
-               if (message.author !== bidder_id) {
-                  if (bidder_id !== null) {
-                     client.sendMessage(
-                        bidder_id,
-                        `*[BOT]* BID *${codeArr[
-                           index
-                        ].toUpperCase()}* dilewati *${
-                           message.rawData.notifyName
-                        }*`
-                     );
-                  }
+            message.reply(`*[BOT]* Bid ${kode} *SAH*. Trimakasih 🤝`);
+
+            if (message.author !== bidder_id) {
+               if (bidder_id !== null) {
+                  client.sendMessage(
+                     bidder_id,
+                     `*[BOT]* BID *${kode}* dilewati *${message.rawData.notifyName}*`
+                  );
                }
             }
          }
       });
+      //send rekap
+      setTimeout(() => rekap(groupId), 3000);
    }
 
    //jump bid command
@@ -419,6 +439,10 @@ client.on('message', async (message) => {
    }
 
    if (jumpBid >= 100 && message.body.length < 14 && chats.isGroup) {
+      if (isAuctionStarting === false) {
+         message.reply('*[BOT]* Lelang belum dimulai. Silahkan hubungi admin.');
+         return;
+      }
       //mendapatkan deret kode dari messageNoSpace
       const codeSstr = messageNoSpace.match(/[a-zA-Z]+/g);
       //pecah jadi array
@@ -430,45 +454,47 @@ client.on('message', async (message) => {
          startTimer(groupId);
       }
 
-      let confirm = false;
       codeArr.map(async (item, index) => {
          const getRekapData = await db.checkBid(codeArr[index]);
+         const kode = codeArr[index].toLocaleUpperCase();
+
+         if (getRekapData === false) {
+            message.reply('*[BOT]* Bid Tidak SAH. Kode salah 🙏');
+            return;
+         }
 
          if (getRekapData.length > 0) {
             let bid = getRekapData[0].bid;
+            const bidder_id = getRekapData[0].bidder_id;
             if (bid === null) {
                bid = 100;
-            }
-            const bidder_id = getRekapData[0].bidder_id;
-
-            if (bid < jumpBid) {
+            } else if (bid > jumpBid) {
+               message.reply(
+                  `*[BOT]* Bid ${kode} Tidak sah. Bid harus lebih besar dari ${bid}`
+               );
+            } else if (bid < jumpBid) {
                db.setRekap(
                   jumpBid,
                   message.rawData.notifyName,
                   message.author,
                   codeArr[index]
                );
-               if (confirm === false) {
-                  message.reply('*[BOT]* Bid *SAH*. Trimakasih 🤝');
-                  confirm = true;
-                  //kirim rekap
-                  setTimeout(() => rekap(groupId), 3000);
-                  if (message.author !== bidder_id) {
-                     if (bidder_id !== null) {
-                        client.sendMessage(
-                           bidder_id,
-                           `*[BOT]* BID *${codeArr[
-                              index
-                           ].toUpperCase()}* dilewati *${
-                              message.rawData.notifyName
-                           }*`
-                        );
-                     }
+               message.reply(`*[BOT]* Bid ${kode} *SAH*. Trimakasih 🤝`);
+               confirm = true;
+               //kirim rekap
+
+               if (message.author !== bidder_id) {
+                  if (bidder_id !== null) {
+                     client.sendMessage(
+                        bidder_id,
+                        `*[BOT]* BID *${kode}* dilewati *${message.rawData.notifyName}*`
+                     );
                   }
                }
             }
          }
       });
+      setTimeout(() => rekap(groupId), 3000);
    }
 
    if (messageLwcase === 'bantuan' && chats.isGroup) {
@@ -528,7 +554,7 @@ const startTimer = (groupId) => {
                if (bidder_id !== null) {
                   client.sendMessage(
                      bidder_id,
-                     `*[BOT]* selamat Anda pemenang lelang ikan *${kode_ikan}* dengan bid *${bid}*`
+                     `*[BOT]* selamat Anda pemenang lelang Ikan kode *${kode_ikan}* dengan bid *${bid}*`
                   );
                   //send media
 
@@ -537,7 +563,7 @@ const startTimer = (groupId) => {
                      setTimeout(() => {
                         client.sendMessage(
                            bidder_id,
-                           '- *PESAN OTOMATIS DARI BOT* -\n==============================\nSilahkan konfirmasi ke *admin* \nklik wa.me/6282214871668\n==============================\n\n*Pembayaran ke rekening: * \n-BCA an. Mumu Abdul Muti 2990769934\n\n*Pembayaran maksimal 2 hari*\nPenitipan 6 hari, Luar pulau 12 hari\n\n*Trimakasih.*\nAdmin'
+                           `- *PESAN OTOMATIS DARI BOT* -\n==============================\nSilahkan konfirmasi ke *admin* \nklik wa.me/6282214871668\n==============================\n\n*Pembayaran ke rekening: * \n-BCA an. Mumu Abdul Muti 2990769934\n\n*Pembayaran maksimal 2 hari*\nPenitipan 6 hari, Luar pulau 12 hari\n\n*Trimakasih.*\nAdmin`
                         );
                      }, 3000);
                      send = true;
@@ -620,18 +646,22 @@ const rekap = async (groupId) => {
 };
 
 const auctionWinner = async (groupId) => {
-   let rekapStr = `- *Selamat Kepada Pemenang Lelang Hari ini ${wa.currentDateTime()}* -\n==============================\n`;
+   let rekapStr = `- *Selamat Kepada Pemenang Lelang Hari ini* -\n${wa.currentDateTime()}\n==============================\n`;
+   let rekapFooter = `\nSilahkan konfirmasi ke *admin* \nklik wa.me/6282214871668\n\n*Pembayaran ke rekening: * \n-BCA an. Mumu Abdul Muti 2990769934\n\n*Pembayaran maksimal 2 hari*\nPenitipan 6 hari, Luar pulau 12 hari\n\n*Trimakasih.*\nAdmin`;
    const rekap = await db.getAllRekapData();
 
    rekap?.map((item, index) => {
       const bidder_id = rekap[index].bidder_id;
-      const dataRekap = `Ikan *${rekap[index].kode_ikan.toUpperCase()}* ${
-         rekap[index].bid
-      } *${rekap[index].bidder}* \n`;
+      const dataRekap = `Kode Ikan *${rekap[
+         index
+      ].kode_ikan.toUpperCase()}* Bid ${rekap[index].bid} Bidder *${
+         rekap[index].bidder
+      }* \n`;
       if (bidder_id !== null) {
          rekapStr = rekapStr.concat(dataRekap);
       }
    });
+   rekapStr = rekapStr.concat(rekapFooter);
    client.sendMessage(groupId, rekapStr);
 };
 
