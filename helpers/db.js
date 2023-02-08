@@ -97,6 +97,22 @@ const setRekap = async (bid, bidder, bidder_id, kode_ikan) => {
    );
 };
 
+const allOb = async (bid, bidder, bidder_id) => {
+   await pool.execute(
+      'UPDATE `rekap` SET `bid` = ?, bidder = ?, bidder_id = ? WHERE `bid` IS NULL',
+      [bid, bidder, bidder_id]
+   );
+};
+
+const checkIsCanAllOb = async () => {
+   const [rows] = await pool.execute(
+      'SELECT `bid` FROM `rekap` WHERE `bid` IS NULL'
+   );
+   if (rows.length > 0) {
+      return rows;
+   } else return false;
+};
+
 module.exports = {
    setMedia,
    setMediaPath,
@@ -108,4 +124,6 @@ module.exports = {
    checkBid,
    setRekap,
    resetMedia,
+   allOb,
+   checkIsCanAllOb,
 };
