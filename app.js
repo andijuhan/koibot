@@ -250,14 +250,26 @@ client.on('message', async (message) => {
    if (
       messageLwcase.includes('ob') &&
       message.body.length < 14 &&
-      chats.isGroup &&
-      isAuctionStarting
+      chats.isGroup
    ) {
       //hapus space di chat
       const messageNoSpace = messageLwcase.split(' ').join('');
       const obPosition = messageNoSpace.search('ob');
       const codeStr = messageNoSpace.slice(0, obPosition);
       const codeArr = codeStr.split('');
+      //perintah all ob
+      if (messageNoSpace.includes('allob')) {
+         const isCanAllOb = await db.checkIsCanAllOb();
+         console.log(isCanAllOb);
+         if (isCanAllOb === false) {
+            message.reply('*[BOT]* Tidak SAH. Sudah Ter OB 🙏');
+            return;
+         }
+         db.allOb(ob, message.rawData.notifyName, message.author);
+         message.reply('*[BOT]* Bid *SAH*. Trimakasih 🤝');
+         setTimeout(() => rekap(groupId), 3000);
+         return;
+      }
       //jika memasuki ekstra time, buat hitungan mundur 10 menit
       //tambah waktu 10 menit jika ada yg bid
       //jika tidak ada yg bid dalam 10 menit. akhiri sesi lelang
@@ -303,6 +315,47 @@ client.on('message', async (message) => {
       const obPosition = messageNoSpace.search('kb');
       const codeStr = messageNoSpace.slice(0, obPosition);
       const codeArr = codeStr.split('');
+
+      //perintah all ob
+      if (messageNoSpace.includes('allkb')) {
+         const dataRekap = await db.getAllRekapData();
+         if (dataRekap !== false) {
+            dataRekap.map((item, index) => {
+               let bid = dataRekap[index].bid;
+
+               if (bid === null) {
+                  bid = 100;
+               }
+               const kode = dataRekap[index].kode_ikan;
+               const bidder_id = dataRekap[index].bidder_id;
+
+               db.setRekap(
+                  (bid += kb),
+                  message.rawData.notifyName,
+                  message.author,
+                  kode
+               );
+
+               if (message.author !== bidder_id) {
+                  if (bidder_id !== null) {
+                     client.sendMessage(
+                        bidder_id,
+                        `*[BOT]* BID *${kode.toUpperCase()}* dilewati *${
+                           message.rawData.notifyName
+                        }*`
+                     );
+                  }
+               }
+            });
+            message.reply('*[BOT]* Bid *SAH*. Trimakasih 🤝');
+            setTimeout(() => rekap(groupId), 3000);
+            return;
+         }
+
+         message.reply('*[BOT]* Bid *SAH*. Trimakasih 🤝');
+         setTimeout(() => rekap(groupId), 3000);
+         return;
+      }
 
       //jika memasuki ekstra time, buat hitungan mundur 10 menit
       //tambah waktu 10 menit jika ada yg bid
@@ -544,14 +597,15 @@ const startTimer = (groupId) => {
 };
 
 const rekap = async (groupId) => {
-   let rekapStr = `- *Rekap Bid Tertinggi Sementara ${wa.currentDateTime()}* -\n=================================\n`;
+   let rekapStr = `- *Rekap Bid Tertinggi Sementara* -\n=================================\n`;
+   let rekapFooter = `\n=================================\n*Close lelang* : \n- Jam 21:10 WIB, ${wa.currentDateTime()}\n- Extratime 10 menit berkelanjutan`;
 
    const rekap = await db.getAllRekapData();
    rekap.map((item, index) => {
       const bidder_id = rekap[index].bidder_id;
-      const dataRekap = `*${rekap[index].kode_ikan.toUpperCase()}* = ${
+      const dataRekap = `Kode *${rekap[index].kode_ikan.toUpperCase()}* Bid ${
          rekap[index].bid
-      } *${rekap[index].bidder}* \n`;
+      } Bidder *${rekap[index].bidder}* \n`;
 
       const dataRekapNull = `*${rekap[index].kode_ikan.toUpperCase()}* = \n`;
 
@@ -561,6 +615,7 @@ const rekap = async (groupId) => {
          rekapStr = rekapStr.concat(dataRekapNull);
       }
    });
+   rekapStr = rekapStr.concat(rekapFooter);
    client.sendMessage(groupId, rekapStr);
 };
 
