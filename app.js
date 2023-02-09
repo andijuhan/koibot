@@ -165,7 +165,7 @@ client.on('message', async (message) => {
 
    if (messageLwcase.includes('video') && isAuctionStarting) {
       message.reply(
-         '*[BOT]* Untuk cek video dan deskripsi Ikan, silahkan ketik *info kode_ikan*'
+         '*[BOT]* Untuk cek video dan deskripsi Ikan, silahkan ketik *info kode*'
       );
    }
 
@@ -196,9 +196,14 @@ client.on('message', async (message) => {
             isAuctionStarting = true;
 
             //jalankan cron job
-            cron.schedule('10 21 * * *', async function () {
+            cron.schedule('17 12 * * *', async function () {
                console.log('Extra Time');
                extraTime = true;
+               if (extraTime) {
+                  //jalankan sekali
+                  addExtraTime = true;
+                  startTimer(groupId);
+               }
 
                //kirim notif ke grup
                client.sendMessage(groupId, '*[BOT]* Memasuki masa extra time.');
@@ -432,16 +437,12 @@ client.on('message', async (message) => {
    //dapatkan nilai jump bid dari chat
    const messageToJumpBidValue = messageNoSpace.match(/\d+/g);
    let jumpBid;
+
    //cek apakah nilai messageToJumpBidValue tersedia?
    if (messageToJumpBidValue !== null) {
-      jumpBid =
-         dt.jumpBidPrice.find((num) => {
-            return num === Number(messageToJumpBidValue[0]);
-         }) | false;
-      if (jumpBid === 0) {
-         message.reply('*[BOT]* Jump Bid harus kelipatan 100.');
-         return;
-      }
+      jumpBid = dt.jumpBidPrice.find((num) => {
+         return num === Number(messageToJumpBidValue[0]);
+      });
    }
 
    if (jumpBid >= 100 && message.body.length < 14 && chats.isGroup) {
@@ -528,6 +529,14 @@ client.on('message', async (message) => {
    if (messageLwcase === 'info lelang' && chats.isGroup) {
       if (info.length > 30) {
          client.sendMessage(message.from, info);
+      } else {
+         client.sendMessage(message.from, '*[BOT]* Lelang belum dimulai.');
+      }
+   }
+
+   if (messageLwcase === 'info rekap') {
+      if (isAuctionStarting) {
+         rekap(groupId);
       } else {
          client.sendMessage(message.from, '*[BOT]* Lelang belum dimulai.');
       }
