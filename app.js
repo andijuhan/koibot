@@ -53,13 +53,22 @@ io.on('connection', (socket) => {
 //auction setup
 let ob = 100;
 let kb = 50;
-let isAuctionStarting = true;
+let isAuctionStarting = false;
 let extraTime = false;
 let count = 0;
 let addExtraTime = false;
 let info = '';
 let setMedia;
 let mediaInfo = false;
+
+client.on('group_join', (notification) => {
+   // User has joined or been added to the group.
+   console.log(notification);
+   const newUser = notification.author;
+   notification.reply(
+      `Selamat datang di grup *Mahkota Koi*\nKetik *info lelang* untuk cek detail lelang.`
+   );
+});
 
 client.on('message', async (message) => {
    const chats = await message.getChat();
@@ -196,7 +205,7 @@ client.on('message', async (message) => {
             isAuctionStarting = true;
 
             //jalankan cron job
-            cron.schedule('17 12 * * *', async function () {
+            cron.schedule('40 22 * * *', async function () {
                console.log('Extra Time');
                extraTime = true;
                if (extraTime) {
@@ -643,6 +652,9 @@ const startTimer = (groupId) => {
 const rekap = async (groupId) => {
    let rekapStr = `- *Rekap Bid Tertinggi Sementara* -\n=================================\n`;
    let rekapFooter = `\n=================================\n*Close lelang* : \n- Jam 21:10 WIB, ${wa.currentDateTime()}\n- Extratime 10 menit berkelanjutan`;
+   let rekapFooterExtraTime = `\n=================================\n*Close lelang* : \n- Extratime 10 menit berkelanjutan\n- Tidak ada bid, *CLOSE ${wa.addSomeMinutes(
+      count
+   )} WIB*\n- Sisa waktu *${count} menit*`;
 
    const rekap = await db.getAllRekapData();
    rekap.map((item, index) => {
@@ -663,12 +675,17 @@ const rekap = async (groupId) => {
          rekapStr = rekapStr.concat(dataRekapNull);
       }
    });
-   rekapStr = rekapStr.concat(rekapFooter);
+   if (extraTime) {
+      rekapStr = rekapStr.concat(rekapFooterExtraTime);
+   } else {
+      rekapStr = rekapStr.concat(rekapFooter);
+   }
+
    client.sendMessage(groupId, rekapStr);
 };
 
 const auctionWinner = async (groupId) => {
-   let rekapStr = `- *Selamat Kepada Pemenang Lelang Hari ini* -\n${wa.currentDateTime()}\n==============================\n`;
+   let rekapStr = `- *Selamat Kepada Pemenang Lelang Hari ini* -\n- ${wa.currentDateTime()}\n==============================\n`;
    let rekapFooter = `\nSilahkan konfirmasi ke *admin* \nklik wa.me/6282214871668\n\n*Pembayaran ke rekening: * \n-BCA an. Mumu Abdul Muti 2990769934\n\n*Pembayaran maksimal 2 hari*\nPenitipan 6 hari, Luar pulau 12 hari\n\n*Trimakasih.*\nAdmin`;
    const rekap = await db.getAllRekapData();
 

@@ -1,4 +1,5 @@
 const data = require('../data/data');
+const date = require('date-and-time');
 
 const getGroupId = (userChat) => {
    const groupObj = userChat
@@ -19,6 +20,15 @@ const currentDateTime = () => {
    return currentDate;
 };
 
+const addSomeMinutes = (minutes) => {
+   const currentDate = new Date();
+   const addMinutes = date.addMinutes(currentDate, minutes);
+   const hourFormat = addMinutes.toLocaleString('id-ID', {
+      timeStyle: 'short',
+   });
+   return hourFormat;
+};
+
 const generateFishCode = (num) => {
    if (num > 0 && num <= 20) {
       const alpha = Array.from(Array(num)).map((e, i) => i + 65);
@@ -31,4 +41,5 @@ module.exports = {
    getGroupId,
    currentDateTime,
    generateFishCode,
+   addSomeMinutes,
 };
