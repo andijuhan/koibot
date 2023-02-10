@@ -64,10 +64,13 @@ let mediaInfo = false;
 client.on('group_join', (notification) => {
    // User has joined or been added to the group.
    console.log(notification);
-   const newUser = notification.author;
    notification.reply(
       `Selamat datang di grup *Mahkota Koi*\nKetik *info lelang* untuk cek detail lelang.`
    );
+});
+
+client.on('disconnected', (reason) => {
+   console.log('Client was logged out', reason);
 });
 
 client.on('message', async (message) => {
@@ -261,6 +264,10 @@ client.on('message', async (message) => {
                      );
                      //send message to group
                      client.sendMessage(groupId, info);
+                     client.sendMessage(
+                        groupId,
+                        `Ketik *bantuan* untuk cek perintah *bot*`
+                     );
                      sendToGroup = true;
                   }
                });
@@ -517,15 +524,18 @@ client.on('message', async (message) => {
    }
 
    if (messageLwcase === 'bantuan' && chats.isGroup) {
-      const head = '*DAFTAR COMMAND BOT LELANG*';
-      const obCom = '*KODE OB* : Open Bid. Contoh: A OB / ABC OB';
-      const kbCom = '*KODE KB* : Kelipatan Bid. Contoh: A KB / ABC KB';
+      const head = '- *DAFTAR COMMAND BOT LELANG* -';
+      const obCom =
+         '*KODE OB* : Open Bid. Contoh: A OB / ABC OB (OB beberapa ikan) / ALL OB (OB semua ikan)';
+      const kbCom =
+         '*KODE KB* : Kelipatan Bid. Contoh: A KB / ABC KB (KB beberapa ikan) / ALL KB (KB semua ikan)';
       const jbCom =
-         '*KODE NILAI_BID* : Jump Bid. Contoh: A 600 (Kelipatan 100)';
+         '*KODE NILAI_BID* : Jump Bid. Contoh: A 600 (Kelipatan 100) / ABC 500 (Jump Bid beberapa ikan)';
       const infoImg =
          '*INFO KODE* : Cek foto/video Ikan & deskripsi Ikan. Contoh: INFO A';
       const infoLel =
          '*INFO LELANG* : Info lelang hari ini. Contoh: INFO LELANG';
+      const infoRekap = '*INFO REKAP* : Info rekap terbaru. Contoh: INFO REKAP';
 
       client.sendMessage(message.from, head);
       client.sendMessage(message.from, obCom);
@@ -533,11 +543,16 @@ client.on('message', async (message) => {
       client.sendMessage(message.from, jbCom);
       client.sendMessage(message.from, infoImg);
       client.sendMessage(message.from, infoLel);
+      client.sendMessage(message.from, infoRekap);
    }
 
    if (messageLwcase === 'info lelang' && chats.isGroup) {
       if (info.length > 30) {
          client.sendMessage(message.from, info);
+         client.sendMessage(
+            message.from,
+            `Ketik *bantuan* untuk cek perintah *bot*`
+         );
       } else {
          client.sendMessage(message.from, '*[BOT]* Lelang belum dimulai.');
       }
