@@ -21,11 +21,18 @@ app.get('/', (req, res) => {
 
 const client = new Client({
    puppeteer: {
+      executablePath: '/usr/bin/google-chrome-stable',
+   },
+   authStrategy: new LocalAuth(),
+});
+
+/* const client = new Client({
+   puppeteer: {
       executablePath:
          'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
    },
    authStrategy: new LocalAuth(),
-});
+}); */
 
 //socket.io setup
 io.on('connection', (socket) => {
