@@ -21,7 +21,7 @@ app.get('/', (req, res) => {
 
 const client = new Client({
    puppeteer: {
-      executablePath: '/usr/bin/google-chrome-stable',
+      executablePath: '/snap/bin/chromium',
    },
    authStrategy: new LocalAuth(),
 });
