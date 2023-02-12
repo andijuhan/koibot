@@ -25,7 +25,6 @@ const client = new Client({
          headless: true,
          args: ['--no-sandbox', '--disable-setuid-sandbox'],
       },
-      session: sessionCfg,
    },
    authStrategy: new LocalAuth(),
 });
