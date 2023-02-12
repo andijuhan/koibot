@@ -20,6 +20,13 @@ app.get('/', (req, res) => {
 });
 
 const client = new Client({
+   puppeteer: {
+      puppeteer: {
+         headless: true,
+         args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      },
+      session: sessionCfg,
+   },
    authStrategy: new LocalAuth(),
 });
 
