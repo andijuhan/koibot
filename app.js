@@ -22,9 +22,9 @@ app.get('/', (req, res) => {
 const client = new Client({
    puppeteer: {
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
-      executablePath: '/snap/bin/chromium',
+      //executablePath: '/snap/bin/chromium',
    },
-   authStrategy: new LocalAuth(),
+   //authStrategy: new LocalAuth(),
 });
 
 /* const client = new Client({
