@@ -217,7 +217,7 @@ client.on('message', async (message) => {
             isAuctionStarting = true;
 
             //jalankan cron job
-            cron.schedule('40 22 * * *', async function () {
+            cron.schedule('10 21 * * *', async function () {
                console.log('Extra Time');
                extraTime = true;
                if (extraTime) {

@@ -29,9 +29,7 @@
       ></script>
       <script>
          $(document).ready(function () {
-            var socket = io.connect('http://45.86.86.235:8000', {
-               path: '/socket.io',
-            });
+            var socket = io();
 
             socket.on('message', (msg) => {
                $('.logs').append($('<li>').text(msg));
