@@ -20,13 +20,17 @@ app.get('/', (req, res) => {
 });
 
 const client = new Client({
+   authStrategy: new LocalAuth(),
+});
+
+/* const client = new Client({
    puppeteer: {
       headless: true,
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
       executablePath: '/snap/bin/chromium',
    },
    authStrategy: new LocalAuth(),
-});
+}); */
 
 /* const client = new Client({
    puppeteer: {
