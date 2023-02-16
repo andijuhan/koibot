@@ -1,10 +1,11 @@
 const mysql = require('mysql2/promise');
+require('dotenv').config();
 
 const pool = mysql.createPool({
    host: '127.0.0.1',
-   user: 'admin',
-   password: 'kamis41091',
-   database: 'koibot',
+   user: process.env.DB_USER,
+   password: process.env.DB_PASS,
+   database: process.env.DB_NAME,
    waitForConnections: true,
    connectionLimit: 20,
    maxIdle: 20, // max idle connections, the default value is the same as `connectionLimit`

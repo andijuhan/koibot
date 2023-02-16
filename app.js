@@ -168,12 +168,10 @@ client.on('message', async (message) => {
             const media = MessageMedia.fromFilePath(mediaInfo.path);
 
             client.sendMessage(message.from, '*[BOT]* Downloading media . . .');
-            setTimeout(() => {
-               client.sendMessage(message.from, media, {
-                  caption: mediaInfo.media_desc,
-               });
-               mediaInfo = false;
-            }, 2000);
+            client.sendMessage(message.from, media, {
+               caption: mediaInfo.media_desc,
+            });
+            mediaInfo = false;
          } else {
             message.reply(
                '*[BOT]* Foto/Video belum tersedia. Silahkan hubungi admin.'
@@ -217,7 +215,7 @@ client.on('message', async (message) => {
             isAuctionStarting = true;
 
             //jalankan cron job
-            cron.schedule('10 21 * * *', async function () {
+            cron.schedule('0 22 * * *', async function () {
                console.log('Extra Time');
                extraTime = true;
                if (extraTime) {
@@ -675,7 +673,7 @@ const startTimer = (groupId) => {
 
 const rekap = async (groupId) => {
    let rekapStr = `- *Rekap Bid Tertinggi Sementara* -\n=================================\n`;
-   let rekapFooter = `\n=================================\n*Close lelang* : \n- Jam 21:10 WIB, ${wa.currentDateTime()}\n- Extratime 10 menit berkelanjutan`;
+   let rekapFooter = `\n=================================\n*Close lelang* : \n- Jam 22:10 WIB, ${wa.currentDateTime()}\n- Extratime 10 menit berkelanjutan`;
    let rekapFooterExtraTime = `\n=================================\n*Close lelang* : \n- Extratime 10 menit berkelanjutan\n- Tidak ada bid, *CLOSE ${wa.addSomeMinutes(
       count
    )} WIB*\n- Sisa waktu *${count} menit*`;
