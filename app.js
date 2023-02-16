@@ -24,7 +24,7 @@ const client = new Client({
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
       executablePath: '/snap/bin/chromium',
    },
-   //authStrategy: new LocalAuth(),
+   authStrategy: new LocalAuth(),
 });
 
 /* const client = new Client({
