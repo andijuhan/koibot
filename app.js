@@ -595,7 +595,7 @@ const startTimer = (groupId) => {
             auctionWinner(groupId);
             //kirim notif ke pemenang lelang
             const rekapData = await db.getAllRekapData();
-            let send = false;
+
             rekapData?.map((item, index) => {
                const bidder_id = rekapData[index].bidder_id;
                const kode_ikan = rekapData[index].kode_ikan;
@@ -607,16 +607,11 @@ const startTimer = (groupId) => {
                   );
                   //send media
 
-                  if (send === false) {
-                     //kirim info pembayaran
-                     setTimeout(() => {
-                        client.sendMessage(
-                           bidder_id,
-                           `- *PESAN OTOMATIS DARI BOT* -\n==============================\nSilahkan konfirmasi ke *admin* \nklik wa.me/6282214871668\n==============================\n\n*Pembayaran ke rekening: * \n-BCA an. Mumu Abdul Muti 2990769934\n\n*Pembayaran maksimal 2 hari*\nPenitipan 6 hari, Luar pulau 12 hari\n\n*Trimakasih.*\nAdmin`
-                        );
-                        send = true;
-                     }, 3000);
-                  }
+                  //kirim info pembayaran
+                  client.sendMessage(
+                     bidder_id,
+                     `- *PESAN OTOMATIS DARI BOT* -\n==============================\nSilahkan konfirmasi ke *admin* \nklik wa.me/6282214871668\n==============================\n\n*Pembayaran ke rekening: * \n-BCA an. Mumu Abdul Muti 2990769934\n\n*Pembayaran maksimal 2 hari*\nPenitipan 6 hari, Luar pulau 12 hari\n\n*Trimakasih.*\nAdmin`
+                  );
                }
             });
             clearInterval(intervalID);
