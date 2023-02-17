@@ -114,6 +114,23 @@ const checkIsCanAllOb = async () => {
    } else return false;
 };
 
+const getSetting = async () => {
+   const [rows] = await pool.execute('SELECT * FROM `setting`');
+   if (rows.length > 0) {
+      return rows;
+   } else return false;
+};
+
+const setInfoLelang = async (info_lelang) => {
+   await pool.execute('UPDATE `setting` SET `info_lelang` = ?', [info_lelang]);
+};
+
+const setStatusLelang = async (lelang_status) => {
+   await pool.execute('UPDATE `setting` SET `lelang_status` = ?', [
+      lelang_status,
+   ]);
+};
+
 module.exports = {
    setMedia,
    setMediaPath,
@@ -127,4 +144,7 @@ module.exports = {
    resetMedia,
    allOb,
    checkIsCanAllOb,
+   getSetting,
+   setInfoLelang,
+   setStatusLelang,
 };
