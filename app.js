@@ -19,21 +19,23 @@ app.get('/', (req, res) => {
    res.sendFile('index.html', { root: __dirname });
 });
 
-const client = new Client({
+/* const client = new Client({
    puppeteer: {
+      headless: true,
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
       executablePath: '/snap/bin/chromium',
    },
    authStrategy: new LocalAuth(),
-});
+}); */
 
-/* const client = new Client({
+const client = new Client({
    puppeteer: {
+      headless: true,
       executablePath:
          'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
    },
    authStrategy: new LocalAuth(),
-}); */
+});
 
 //socket.io setup
 io.on('connection', (socket) => {
@@ -62,11 +64,24 @@ io.on('connection', (socket) => {
 //auction setup
 let ob = 100;
 let kb = 50;
-let isAuctionStarting = false;
+let isAuctionStarting;
+let info;
+
+const settingData = async () => {
+   const data = await db.getSetting();
+
+   if (data !== false) {
+      isAuctionStarting = data[0].lelang_status;
+      info = data[0].info_lelang;
+   }
+};
+
+settingData();
+
 let extraTime = false;
 let count = 0;
 let addExtraTime = false;
-let info = '';
+
 let setMedia;
 let mediaInfo = false;
 
@@ -89,7 +104,7 @@ client.on('message', async (message) => {
    const messageLwcase = message.body.toLocaleLowerCase();
    const mediaCode = messageLwcase.slice(0, 6);
 
-   if (chats.isGroup == false) {
+   if (chats.isGroup === false) {
       setMedia = await db.setMedia(mediaCode);
    }
 
@@ -99,6 +114,11 @@ client.on('message', async (message) => {
 
    //get group id
    const groupId = wa.getGroupId(userChat);
+
+   //tes bot
+   if (messageLwcase === 'tes bot' && chats.isGroup === false) {
+      message.reply('Bot sedang aktif.');
+   }
 
    //setup media - admin
    if (setMedia !== false && message.hasMedia && chats.isGroup === false) {
@@ -190,7 +210,7 @@ client.on('message', async (message) => {
 
    //setup info lelang
    if (message.body.includes('#LELANG') && chats.isGroup === false) {
-      info = message.body;
+      await db.setInfoLelang(message.body);
       if (info.length > 20) {
          client.sendMessage(message.from, '*[BOT]* Info lelang tersimpan.');
          client.sendMessage(
@@ -212,7 +232,7 @@ client.on('message', async (message) => {
 
       if (info.length > 20) {
          if (fishCodes.length >= 1) {
-            isAuctionStarting = true;
+            isAuctionStarting = db.setStatusLelang(1);
 
             //jalankan cron job
             cron.schedule('0 22 * * *', async function () {
@@ -584,9 +604,9 @@ const startTimer = (groupId) => {
          count--;
          if (count <= 0) {
             //reset info lelang
-            info = '';
+            await db.setInfoLelang('');
             //akhiri sesi lelang
-            isAuctionStarting = false;
+            isAuctionStarting = db.setStatusLelang(0);
             //notifikasi lelang telah berakhir
             client.sendMessage(
                groupId,

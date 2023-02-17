@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 12, 2023 at 04:11 AM
+-- Generation Time: Feb 17, 2023 at 05:33 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.1.12
 
@@ -41,11 +41,12 @@ CREATE TABLE `media` (
 --
 
 INSERT INTO `media` (`id`, `command`, `reply`, `path`, `media_desc`, `info`) VALUES
-(387, 'kode a', 'a.', NULL, NULL, 'info a'),
-(388, 'kode b', 'b.', NULL, NULL, 'info b'),
-(389, 'kode c', 'c.', NULL, NULL, 'info c'),
-(390, 'kode d', 'd.', NULL, NULL, 'info d'),
-(391, 'kode e', 'e.', NULL, NULL, 'info e');
+(392, 'kode a', 'a.', NULL, NULL, 'info a'),
+(393, 'kode b', 'b.', NULL, NULL, 'info b'),
+(394, 'kode c', 'c.', NULL, NULL, 'info c'),
+(395, 'kode d', 'd.', NULL, NULL, 'info d'),
+(396, 'kode e', 'e.', NULL, NULL, 'info e'),
+(397, 'kode f', 'f.', NULL, NULL, 'info f');
 
 -- --------------------------------------------------------
 
@@ -65,11 +66,31 @@ CREATE TABLE `rekap` (
 --
 
 INSERT INTO `rekap` (`kode_ikan`, `bid`, `bidder`, `bidder_id`) VALUES
-('A', NULL, NULL, NULL),
+('A', 150, 'Andi', '6281324046606@c.us'),
 ('B', NULL, NULL, NULL),
 ('C', NULL, NULL, NULL),
 ('D', NULL, NULL, NULL),
-('E', NULL, NULL, NULL);
+('E', 100, 'Andi', '6281324046606@c.us'),
+('F', 100, 'Andi', '6281324046606@c.us');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `setting`
+--
+
+CREATE TABLE `setting` (
+  `id` int(11) NOT NULL,
+  `info_lelang` varchar(1000) NOT NULL,
+  `lelang_status` tinyint(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `setting`
+--
+
+INSERT INTO `setting` (`id`, `info_lelang`, `lelang_status`) VALUES
+(1, 'MAHKOTA KOI AUCTION #LELANG ke 1300\n\n▫BACA DENGAN TELITI SAMPAI TUNTAS  SEBELUM MELAKUKAN BID..!!!\n\n\n➡Lelang dimulai saat admin posting ikan\n➡Selesai     :  21.00 wib\n(Perpanjangan 10 menit berlaku kelipatan dari bid trakhir dan seterusnya)\n\nIKAN A\n➡ Jenis        : SHOWA\n➡ Kelamin   :  unchek\n➡ Ukuran     : 17cm\n➡ Breeder    : lokal\n➡ Status       : KUNINGAN\n▶ ket             : \n*OB 100.000 KB 100\n\n\n\n\n\n\nIKAN B\n➡ Jenis        : SHIRO\n➡ Kelamin   : UNCHEK\n➡ Ukuran     : 20CM\n➡ Breeder    : lokal\n➡ Status       : KUNINGAN\n▶ket              : \nOB 100.000 KB 100k\n \n\n\n\n\n▫CEK FOTO & VIDEO  dengan teliti (Tidak menerima komplain apapun setelah lelang selesai)\n▫JIKA RAGU.. Bisa tanyakan admin terlebih dahulu\n\n▫Pembayaran maximal 2x24 jam\n▫Tidak di perbolehkan Bid & Run..!!!\n▫Penitipan ikan max 7hari dari close lelang bilamana ada kepanjangan wktu makan akan dikenakan biaya tambahan\n\n\nHAHPPY BIDDING 🔥🔥', 1);
 
 --
 -- Indexes for dumped tables
@@ -88,6 +109,12 @@ ALTER TABLE `rekap`
   ADD PRIMARY KEY (`kode_ikan`);
 
 --
+-- Indexes for table `setting`
+--
+ALTER TABLE `setting`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -95,7 +122,13 @@ ALTER TABLE `rekap`
 -- AUTO_INCREMENT for table `media`
 --
 ALTER TABLE `media`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=392;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=398;
+
+--
+-- AUTO_INCREMENT for table `setting`
+--
+ALTER TABLE `setting`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
