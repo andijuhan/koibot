@@ -66,17 +66,8 @@ let ob = 100;
 let kb = 50;
 let isAuctionStarting;
 let info;
-
-const settingData = async () => {
-   const data = await db.getSetting();
-
-   if (data !== false) {
-      isAuctionStarting = data[0].lelang_status;
-      info = data[0].info_lelang;
-   }
-};
-
-settingData();
+let userChat;
+let groupId;
 
 let extraTime = false;
 let count = 0;
@@ -84,6 +75,21 @@ let addExtraTime = false;
 
 let setMedia;
 let mediaInfo = false;
+
+client.on('ready', async () => {
+   console.log('Mempersiapkan data lelang');
+   const data = await db.getSetting();
+   userChat = await client.getChats();
+   groupId = wa.getGroupId(userChat);
+
+   if (data !== false) {
+      isAuctionStarting = data[0].lelang_status;
+      info = data[0].info_lelang;
+      if (isAuctionStarting) {
+         setClosingAuction();
+      }
+   }
+});
 
 client.on('group_join', (notification) => {
    // User has joined or been added to the group.
@@ -99,7 +105,6 @@ client.on('disconnected', (reason) => {
 
 client.on('message', async (message) => {
    const chats = await message.getChat();
-   const userChat = await client.getChats();
 
    const messageLwcase = message.body.toLocaleLowerCase();
    const mediaCode = messageLwcase.slice(0, 6);
@@ -111,9 +116,6 @@ client.on('message', async (message) => {
    if (messageLwcase.includes('info')) {
       mediaInfo = await db.getMediaInfo(messageLwcase);
    }
-
-   //get group id
-   const groupId = wa.getGroupId(userChat);
 
    //tes bot
    if (messageLwcase === 'tes bot' && chats.isGroup === false) {
@@ -235,22 +237,7 @@ client.on('message', async (message) => {
             isAuctionStarting = db.setStatusLelang(1);
 
             //jalankan cron job
-            cron.schedule('0 22 * * *', async function () {
-               console.log('Extra Time');
-               extraTime = true;
-               if (extraTime) {
-                  //jalankan sekali
-                  addExtraTime = true;
-                  startTimer(groupId);
-               }
-
-               //kirim notif ke grup
-               client.sendMessage(groupId, '*[BOT]* Memasuki masa extra time.');
-               client.sendMessage(
-                  groupId,
-                  '*[BOT]* Tidak ada bid *closed* jam 21:10.'
-               );
-            });
+            setClosingAuction();
 
             //bersihkan file
             setTimeout(() => {
@@ -259,7 +246,9 @@ client.on('message', async (message) => {
                   '*[BOT]* Membersihkan file di server . . .'
                );
             }, 2000);
+
             const folder = './upload/';
+
             fs.readdir(folder, (err, files) => {
                if (err) throw err;
                for (const file of files) {
@@ -267,6 +256,7 @@ client.on('message', async (message) => {
                   fs.unlinkSync(folder + file);
                }
             });
+
             //bersihkan tabel
             setTimeout(() => {
                client.sendMessage(message.from, '*[BOT]* Reset database . . .');
@@ -275,29 +265,25 @@ client.on('message', async (message) => {
             }, 4000);
 
             //insert kode ikan
-            let sendToGroup = false;
             setTimeout(() => {
                fishCodes.map((item, index) => {
                   db.fillRekap(fishCodes[index]);
-                  if (sendToGroup === false) {
-                     //confirm
-                     client.sendMessage(
-                        message.from,
-                        '*[BOT]* Lelang siap dimulai. Info lelang sudah dikirim ke group.'
-                     );
-                     client.sendMessage(
-                        message.from,
-                        '*[BOT]* Jangan lupa setup foto/video & deskripsi Ikan yg akan di lelang.'
-                     );
-                     //send message to group
-                     client.sendMessage(groupId, info);
-                     client.sendMessage(
-                        groupId,
-                        `Ketik *bantuan* untuk cek perintah *bot*`
-                     );
-                     sendToGroup = true;
-                  }
                });
+
+               client.sendMessage(
+                  message.from,
+                  '*[BOT]* Lelang siap dimulai. Info lelang sudah dikirim ke group.'
+               );
+               client.sendMessage(
+                  message.from,
+                  '*[BOT]* Jangan lupa setup foto/video & deskripsi Ikan yg akan di lelang.'
+               );
+               //send message to group
+               client.sendMessage(groupId, info);
+               client.sendMessage(
+                  groupId,
+                  `Ketik *bantuan* untuk cek perintah *bot*`
+               );
             }, 6000);
          }
       } else {
@@ -741,8 +727,25 @@ const auctionWinner = async (groupId) => {
    client.sendMessage(groupId, rekapStr);
 };
 
+const setClosingAuction = () => {
+   console.log('set closing');
+   cron.schedule('0 22 * * *', async function () {
+      console.log('Extra Time');
+      extraTime = true;
+      if (extraTime) {
+         //jalankan sekali
+         addExtraTime = true;
+         startTimer(groupId);
+      }
+
+      //kirim notif ke grup
+      client.sendMessage(groupId, '*[BOT]* Memasuki masa extra time.');
+      client.sendMessage(groupId, '*[BOT]* Tidak ada bid *closed* jam 21:10.');
+   });
+};
+
 client.initialize();
 
-server.listen(8000, () => {
-   console.log('App running on *:', 8000);
+server.listen(3000, () => {
+   console.log('App running on *:', 3000);
 });
