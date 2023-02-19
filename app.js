@@ -745,6 +745,9 @@ const setClosingAuction = () => {
             groupId,
             '*[BOT]* Transaksi lelang dilakukan secara manual.'
          );
+         isAuctionStarting = false;
+         db.setStatusLelang(0);
+         db.setInfoLelang('');
       }
    }
    if (currentHour < 22) {
