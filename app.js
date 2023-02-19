@@ -101,6 +101,7 @@ client.on('group_join', (notification) => {
 
 client.on('disconnected', (reason) => {
    console.log('Client was logged out', reason);
+   return process.exit(1);
 });
 
 client.on('message', async (message) => {
