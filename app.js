@@ -354,7 +354,9 @@ client.on('message', async (message) => {
          }
       });
       //kirim rekap
-      setTimeout(() => rekap(groupId), 3000);
+      if (codeArr.length > 0) {
+         setTimeout(() => rekap(groupId), 3000);
+      }
    }
 
    //kb command
@@ -459,7 +461,9 @@ client.on('message', async (message) => {
          }
       });
       //send rekap
-      setTimeout(() => rekap(groupId), 3000);
+      if (codeArr.length > 0) {
+         setTimeout(() => rekap(groupId), 3000);
+      }
    }
 
    //jump bid command
@@ -534,7 +538,9 @@ client.on('message', async (message) => {
             }
          }
       });
-      setTimeout(() => rekap(groupId), 3000);
+      if (codeArr.length > 0) {
+         setTimeout(() => rekap(groupId), 3000);
+      }
    }
 
    if (messageLwcase === 'bantuan' && chats.isGroup) {
