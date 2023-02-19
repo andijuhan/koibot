@@ -747,6 +747,11 @@ const setClosingAuction = () => {
    if (currentHour >= 22 && extraTime === false) {
       console.log('Tidak bisa set waktu closing karena di atas jam 22');
       client.sendMessage(groupId, '*[BOT]* Server bot telah di restart.');
+      client.sendMessage(
+         groupId,
+         '*[BOT]* Transaksi lelang dilakukan secara manual.'
+      );
+      isAuctionStarting = 0;
    }
    if (currentHour < 22) {
       console.log('Berhasil set waktu closing');
