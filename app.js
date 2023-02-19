@@ -742,20 +742,24 @@ const setClosingAuction = () => {
          groupId,
          '*[BOT]* Server bot mengalami kendala. Silahkan close manual oleh admin.'
       );
-   }
-   cron.schedule('0 22 * * *', async function () {
-      console.log('Extra Time');
-      extraTime = true;
-      if (extraTime) {
-         //jalankan sekali
-         addExtraTime = true;
-         startTimer(groupId);
-      }
+   } else {
+      cron.schedule('0 22 * * *', async function () {
+         console.log('Extra Time');
+         extraTime = true;
+         if (extraTime) {
+            //jalankan sekali
+            addExtraTime = true;
+            startTimer(groupId);
+         }
 
-      //kirim notif ke grup
-      client.sendMessage(groupId, '*[BOT]* Memasuki masa extra time.');
-      client.sendMessage(groupId, '*[BOT]* Tidak ada bid *closed* jam 22:10.');
-   });
+         //kirim notif ke grup
+         client.sendMessage(groupId, '*[BOT]* Memasuki masa extra time.');
+         client.sendMessage(
+            groupId,
+            '*[BOT]* Tidak ada bid *closed* jam 22:10.'
+         );
+      });
+   }
 };
 
 client.initialize();
