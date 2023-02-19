@@ -242,6 +242,7 @@ client.on('message', async (message) => {
       if (info.length > 20) {
          if (fishCodes.length >= 1) {
             isAuctionStarting = db.setStatusLelang(1);
+            isAuctionStarting = true;
 
             //jalankan cron job
             setClosingAuction();
