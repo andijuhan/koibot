@@ -747,6 +747,7 @@ const setClosingAuction = () => {
          );
          isAuctionStarting = false;
          db.setStatusLelang(0);
+         info = '';
          db.setInfoLelang('');
       }
    }
