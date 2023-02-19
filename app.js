@@ -741,7 +741,7 @@ const setClosingAuction = () => {
 
       //kirim notif ke grup
       client.sendMessage(groupId, '*[BOT]* Memasuki masa extra time.');
-      client.sendMessage(groupId, '*[BOT]* Tidak ada bid *closed* jam 21:10.');
+      client.sendMessage(groupId, '*[BOT]* Tidak ada bid *closed* jam 22:10.');
    });
 };
 
