@@ -365,7 +365,7 @@ client.on('message', async (message) => {
       message.body.length < 14 &&
       chats.isGroup
    ) {
-      if (isAuctionStarting === false) {
+      if (isAuctionStarting === 0) {
          message.reply('*[BOT]* Lelang belum dimulai. Silahkan hubungi admin.');
          return;
       }
