@@ -736,6 +736,13 @@ const auctionWinner = async (groupId) => {
 
 const setClosingAuction = () => {
    console.log('set closing');
+   const currentHour = new Date().getHours();
+   if (currentHour >= 22 && extraTime === false) {
+      client.sendMessage(
+         groupId,
+         '*[BOT]* Server bot mengalami kendala. Silahkan close manual oleh admin.'
+      );
+   }
    cron.schedule('0 22 * * *', async function () {
       console.log('Extra Time');
       extraTime = true;
