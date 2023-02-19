@@ -214,6 +214,7 @@ client.on('message', async (message) => {
    //setup info lelang
    if (message.body.includes('#LELANG') && chats.isGroup === false) {
       await db.setInfoLelang(message.body);
+      info = message.body;
       if (info.length > 20) {
          client.sendMessage(message.from, '*[BOT]* Info lelang tersimpan.');
          client.sendMessage(
@@ -228,6 +229,11 @@ client.on('message', async (message) => {
    }
    //when the auction starts
    if (messageLwcase.includes('lelang mulai') && chats.isGroup === false) {
+      const currentHour = new Date().getHours();
+      if (currentHour >= 22) {
+         message.reply('*[BOT]* Lelang dapat dimulai besok hari.');
+         return;
+      }
       //kode ikan
       const messageToArr = message.body.split(' ');
       const numOfFish = Number(messageToArr[2]);
