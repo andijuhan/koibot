@@ -736,14 +736,16 @@ const auctionWinner = async (groupId) => {
 
 const setClosingAuction = () => {
    const currentHour = new Date().getHours();
+   //jika server mengalami error di jam 22 ke atas
    if (currentHour >= 22 && extraTime === false) {
-      console.log('tidak bisa set waktu closing karena di atas jam 22');
+      console.log('Tidak bisa set waktu closing karena di atas jam 22');
       client.sendMessage(
          groupId,
          '*[BOT]* Server bot mengalami kendala. Silahkan close manual oleh admin.'
       );
-   } else {
-      console.log('set closing');
+   }
+   if (currentHour < 22) {
+      console.log('Berhasil set waktu closing');
       cron.schedule('0 22 * * *', async function () {
          console.log('Extra Time');
          extraTime = true;
