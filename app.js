@@ -19,23 +19,23 @@ app.get('/', (req, res) => {
    res.sendFile('index.html', { root: __dirname });
 });
 
-/* const client = new Client({
+const client = new Client({
    puppeteer: {
       headless: true,
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
       executablePath: '/snap/bin/chromium',
    },
    authStrategy: new LocalAuth(),
-}); */
+});
 
-const client = new Client({
+/* const client = new Client({
    puppeteer: {
       headless: true,
       executablePath:
          'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
    },
    authStrategy: new LocalAuth(),
-});
+}); */
 
 //socket.io setup
 io.on('connection', (socket) => {
@@ -323,7 +323,7 @@ client.on('message', async (message) => {
       //jika memasuki ekstra time, buat hitungan mundur 10 menit
       //tambah waktu 10 menit jika ada yg bid
       //jika tidak ada yg bid dalam 10 menit. akhiri sesi lelang
-      if (extraTime) {
+      if (extraTime && codeArr.length > 0) {
          //jalankan sekali
          addExtraTime = true;
          startTimer(groupId);
@@ -418,7 +418,7 @@ client.on('message', async (message) => {
       //tambah waktu 10 menit jika ada yg bid
       //jika tidak ada yg bid dalam 10 menit. akhiri sesi lelang
 
-      if (extraTime) {
+      if (extraTime && codeArr.length > 0) {
          //jalankan sekali
          addExtraTime = true;
          startTimer(groupId);
@@ -485,7 +485,7 @@ client.on('message', async (message) => {
       //pecah jadi array
       const codeArr = codeSstr[0].split('');
 
-      if (extraTime) {
+      if (extraTime && codeArr.length > 0) {
          //jalankan sekali
          addExtraTime = true;
          startTimer(groupId);
