@@ -330,7 +330,7 @@ client.on('message', async (message) => {
       //jika memasuki ekstra time, buat hitungan mundur 10 menit
       //tambah waktu 10 menit jika ada yg bid
       //jika tidak ada yg bid dalam 10 menit. akhiri sesi lelang
-
+      addExtraTime = true;
       codeArr.map(async (item, index) => {
          //cek apakah nilai bid dari kode koi == 0?
          const checkBid = await db.checkBid(codeArr[index]);
@@ -341,7 +341,6 @@ client.on('message', async (message) => {
          } else {
             if (extraTime) {
                //jalankan sekali
-               addExtraTime = true;
                startTimer(groupId);
             }
          }
@@ -427,6 +426,7 @@ client.on('message', async (message) => {
       //jika memasuki ekstra time, buat hitungan mundur 10 menit
       //tambah waktu 10 menit jika ada yg bid
       //jika tidak ada yg bid dalam 10 menit. akhiri sesi lelang
+      addExtraTime = true;
       codeArr.map(async (item, index) => {
          const getRekapData = await db.checkBid(codeArr[index]);
          const kode = codeArr[index].toLocaleUpperCase();
@@ -436,7 +436,6 @@ client.on('message', async (message) => {
          } else {
             if (extraTime) {
                //jalankan sekali
-               addExtraTime = true;
                startTimer(groupId);
             }
          }
@@ -496,6 +495,7 @@ client.on('message', async (message) => {
       //pecah jadi array
       const codeArr = codeSstr[0].split('');
 
+      addExtraTime = true;
       codeArr.map(async (item, index) => {
          const getRekapData = await db.checkBid(codeArr[index]);
          const kode = codeArr[index].toLocaleUpperCase();
@@ -506,7 +506,6 @@ client.on('message', async (message) => {
          } else {
             if (extraTime) {
                //jalankan sekali
-               addExtraTime = true;
                startTimer(groupId);
             }
          }
