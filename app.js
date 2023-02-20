@@ -596,6 +596,7 @@ client.on('message', async (message) => {
 const startTimer = (groupId) => {
    if (addExtraTime && count > 0) {
       count += 10;
+      addExtraTime = false;
    }
    if (count === 0) {
       count = 10;
@@ -604,8 +605,10 @@ const startTimer = (groupId) => {
          if (count <= 0) {
             //reset info lelang
             await db.setInfoLelang('');
+            info = '';
             //akhiri sesi lelang
-            isAuctionStarting = db.setStatusLelang(0);
+            await db.setStatusLelang(0);
+            isAuctionStarting = 0;
             //notifikasi lelang telah berakhir
             client.sendMessage(
                groupId,
