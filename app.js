@@ -330,11 +330,6 @@ client.on('message', async (message) => {
       //jika memasuki ekstra time, buat hitungan mundur 10 menit
       //tambah waktu 10 menit jika ada yg bid
       //jika tidak ada yg bid dalam 10 menit. akhiri sesi lelang
-      if (extraTime && codeArr.length > 0) {
-         //jalankan sekali
-         addExtraTime = true;
-         startTimer(groupId);
-      }
 
       codeArr.map(async (item, index) => {
          //cek apakah nilai bid dari kode koi == 0?
@@ -343,6 +338,12 @@ client.on('message', async (message) => {
          if (checkBid === false) {
             message.reply(`*[BOT]* Bid ${kode} Tidak SAH. Kode salah 🙏`);
             return;
+         } else {
+            if (extraTime) {
+               //jalankan sekali
+               addExtraTime = true;
+               startTimer(groupId);
+            }
          }
 
          if (checkBid?.length > 0) {
@@ -426,19 +427,18 @@ client.on('message', async (message) => {
       //jika memasuki ekstra time, buat hitungan mundur 10 menit
       //tambah waktu 10 menit jika ada yg bid
       //jika tidak ada yg bid dalam 10 menit. akhiri sesi lelang
-
-      if (extraTime && codeArr.length > 0) {
-         //jalankan sekali
-         addExtraTime = true;
-         startTimer(groupId);
-      }
-
       codeArr.map(async (item, index) => {
          const getRekapData = await db.checkBid(codeArr[index]);
          const kode = codeArr[index].toLocaleUpperCase();
          if (getRekapData === false) {
             message.reply(`*[BOT]* Bid ${kode} Tidak SAH. Kode salah 🙏`);
             return;
+         } else {
+            if (extraTime) {
+               //jalankan sekali
+               addExtraTime = true;
+               startTimer(groupId);
+            }
          }
 
          if (getRekapData?.length > 0) {
@@ -496,12 +496,6 @@ client.on('message', async (message) => {
       //pecah jadi array
       const codeArr = codeSstr[0].split('');
 
-      if (extraTime && codeArr.length > 0) {
-         //jalankan sekali
-         addExtraTime = true;
-         startTimer(groupId);
-      }
-
       codeArr.map(async (item, index) => {
          const getRekapData = await db.checkBid(codeArr[index]);
          const kode = codeArr[index].toLocaleUpperCase();
@@ -509,6 +503,12 @@ client.on('message', async (message) => {
          if (getRekapData === false) {
             message.reply(`*[BOT]* Bid ${kode} Tidak SAH. Kode salah 🙏`);
             return;
+         } else {
+            if (extraTime) {
+               //jalankan sekali
+               addExtraTime = true;
+               startTimer(groupId);
+            }
          }
 
          if (getRekapData.length > 0) {
