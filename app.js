@@ -315,7 +315,7 @@ client.on('message', async (message) => {
       const codeStr = messageNoSpace.slice(0, obPosition);
       const codeArr = codeStr.split('');
       //perintah all ob
-      if (messageNoSpace.includes('allob')) {
+      if (messageNoSpace === 'allob') {
          const isCanAllOb = await db.checkIsCanAllOb();
          console.log(isCanAllOb);
          if (isCanAllOb === false) {
@@ -384,7 +384,7 @@ client.on('message', async (message) => {
       const codeArr = codeStr.split('');
 
       //perintah all ob
-      if (messageNoSpace.includes('allkb')) {
+      if (messageNoSpace === 'allkb') {
          const dataRekap = await db.getAllRekapData();
          if (dataRekap !== false) {
             dataRekap.map((item, index) => {
