@@ -74,7 +74,7 @@ let count = 0;
 let addExtraTime = false;
 
 let setMedia;
-let mediaInfo = false;
+//let mediaInfo = false;
 
 client.on('ready', async () => {
    console.log('Mempersiapkan data lelang');
@@ -114,8 +114,38 @@ client.on('message', async (message) => {
       setMedia = await db.setMedia(mediaCode);
    }
 
-   if (messageLwcase.includes('info')) {
-      mediaInfo = await db.getMediaInfo(messageLwcase);
+   if (messageLwcase.includes('info') && messageLwcase.length < 7) {
+      const mediaInfo = await db.getMediaInfo(messageLwcase);
+      //info kode ikan - user
+      if (mediaInfo !== false && chats.isGroup) {
+         if (isAuctionStarting === 0) {
+            message.reply(
+               '*[BOT]* Lelang belum dimulai. Silahkan hubungi admin.'
+            );
+            return;
+         }
+         try {
+            if (fs.existsSync(mediaInfo.path)) {
+               //file exists
+               const media = MessageMedia.fromFilePath(mediaInfo.path);
+
+               client.sendMessage(
+                  message.from,
+                  '*[BOT]* Downloading media . . .'
+               );
+               client.sendMessage(message.from, media, {
+                  caption: mediaInfo.media_desc,
+               });
+               //mediaInfo = false;
+            } else {
+               message.reply(
+                  '*[BOT]* Foto/Video belum tersedia. Silahkan hubungi admin.'
+               );
+            }
+         } catch (err) {
+            console.log(err);
+         }
+      }
    }
 
    //tes bot
@@ -176,32 +206,6 @@ client.on('message', async (message) => {
          message.reply('*[BOT]* Media berhasil dikirim ke grup.');
       } else {
          message.reply('*[BOT]* Media terhapus. Silahkan ulangi setup media.');
-      }
-   }
-
-   //info kode ikan - user
-   if (mediaInfo !== false && chats.isGroup) {
-      if (isAuctionStarting === 0) {
-         message.reply('*[BOT]* Lelang belum dimulai. Silahkan hubungi admin.');
-         return;
-      }
-      try {
-         if (fs.existsSync(mediaInfo.path)) {
-            //file exists
-            const media = MessageMedia.fromFilePath(mediaInfo.path);
-
-            client.sendMessage(message.from, '*[BOT]* Downloading media . . .');
-            client.sendMessage(message.from, media, {
-               caption: mediaInfo.media_desc,
-            });
-            mediaInfo = false;
-         } else {
-            message.reply(
-               '*[BOT]* Foto/Video belum tersedia. Silahkan hubungi admin.'
-            );
-         }
-      } catch (err) {
-         console.log(err);
       }
    }
 
