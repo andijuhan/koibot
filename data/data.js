@@ -11,7 +11,10 @@ const jumpBidPrice = [
 
 const groupName = 'Rajabot Testing';
 
+const admins = ['6281324046606@c.us', '6282214871668@c.us'];
+
 module.exports = {
    jumpBidPrice,
    groupName,
+   admins,
 };

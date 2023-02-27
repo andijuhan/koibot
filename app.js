@@ -19,23 +19,23 @@ app.get('/', (req, res) => {
    res.sendFile('index.html', { root: __dirname });
 });
 
-const client = new Client({
+/* const client = new Client({
    puppeteer: {
       headless: true,
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
       executablePath: '/snap/bin/chromium',
    },
    authStrategy: new LocalAuth(),
-});
+}); */
 
-/* const client = new Client({
+const client = new Client({
    puppeteer: {
       headless: true,
       executablePath:
          'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
    },
    authStrategy: new LocalAuth(),
-}); */
+});
 
 //socket.io setup
 io.on('connection', (socket) => {
@@ -105,8 +105,11 @@ client.on('disconnected', (reason) => {
 });
 
 client.on('message', async (message) => {
-   const chats = await message.getChat();
+   const adminBot = dt.admins.find((admin) => {
+      return admin === message.rawData.from;
+   });
 
+   const chats = await message.getChat();
    const messageLwcase = message.body.toLocaleLowerCase();
    const mediaCode = messageLwcase.slice(0, 6);
 
@@ -149,12 +152,17 @@ client.on('message', async (message) => {
    }
 
    //tes bot
-   if (messageLwcase === 'tes bot' && chats.isGroup === false) {
+   if (messageLwcase === 'tes bot' && chats.isGroup === false && adminBot) {
       message.reply('Bot sedang aktif.');
    }
 
    //setup media - admin
-   if (setMedia !== false && message.hasMedia && chats.isGroup === false) {
+   if (
+      setMedia !== false &&
+      message.hasMedia &&
+      chats.isGroup === false &&
+      adminBot
+   ) {
       const attachmentData = await message.downloadMedia();
       //dapatkan ekstensi media
       const ext = attachmentData.mimetype.split('/');
@@ -181,7 +189,11 @@ client.on('message', async (message) => {
    }
 
    //kirim media ke group - admin
-   if (messageLwcase.includes('kirim media') && chats.isGroup === false) {
+   if (
+      messageLwcase.includes('kirim media') &&
+      chats.isGroup === false &&
+      adminBot
+   ) {
       const mediaInfoArr = await db.getAllMediaInfo();
 
       if (mediaInfoArr !== false) {
@@ -216,14 +228,18 @@ client.on('message', async (message) => {
    }
 
    //setup info lelang
-   if (message.body.includes('#LELANG') && chats.isGroup === false) {
+   if (
+      message.body.includes('#LELANG') &&
+      chats.isGroup === false &&
+      adminBot
+   ) {
       await db.setInfoLelang(message.body);
       info = message.body;
       if (info.length > 20) {
          client.sendMessage(message.from, '*[BOT]* Info lelang tersimpan.');
          client.sendMessage(
             message.from,
-            '*[BOT]* Selanjutnya ketik perintah : *lelang mulai (jumlah ikan yg di lelang)*.'
+            '*[BOT]* Selanjutnya ketik perintah : *lelang mulai (jumlah ikan yg di lelang)* untuk setup lelang.'
          );
          client.sendMessage(
             message.from,
@@ -232,7 +248,12 @@ client.on('message', async (message) => {
       }
    }
    //when the auction starts
-   if (messageLwcase.includes('lelang mulai') && chats.isGroup === false) {
+   if (
+      messageLwcase.includes('lelang mulai') &&
+      chats.isGroup === false &&
+      adminBot
+   ) {
+      console.log(message.rawData.from);
       const currentHour = new Date().getHours();
       if (currentHour >= 22) {
          message.reply('*[BOT]* Lelang dapat dimulai besok hari.');
@@ -245,9 +266,6 @@ client.on('message', async (message) => {
 
       if (info.length > 20) {
          if (fishCodes.length >= 1) {
-            isAuctionStarting = db.setStatusLelang(1);
-            isAuctionStarting = true;
-
             //jalankan cron job
             setClosingAuction();
 
@@ -284,7 +302,7 @@ client.on('message', async (message) => {
 
                client.sendMessage(
                   message.from,
-                  '*[BOT]* Lelang siap dimulai. Info lelang sudah dikirim ke group.'
+                  '*[BOT]* Lelang sudah di setup. Ketik *lelang dimulai* untuk memulai lelang.'
                );
                client.sendMessage(
                   message.from,
@@ -301,6 +319,19 @@ client.on('message', async (message) => {
       } else {
          message.reply('*[BOT]* Silahkan buat *Info Lelang* terlebih dahulu');
       }
+   }
+
+   if (
+      messageLwcase === 'lelang dimulai' &&
+      chats.isGroup === false &&
+      adminBot
+   ) {
+      isAuctionStarting = db.setStatusLelang(1);
+      isAuctionStarting = true;
+      client.sendMessage(
+         groupId,
+         '*[BOT]* Bismillah Hirohman Nirohim.. Lelang dimulai.'
+      );
    }
 
    //ob command
@@ -766,7 +797,6 @@ const setClosingAuction = () => {
          extraTime = true;
          if (extraTime) {
             //jalankan sekali
-            addExtraTime = true;
             startTimer(groupId);
          }
 
