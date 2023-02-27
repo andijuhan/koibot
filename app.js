@@ -19,23 +19,23 @@ app.get('/', (req, res) => {
    res.sendFile('index.html', { root: __dirname });
 });
 
-/* const client = new Client({
+const client = new Client({
    puppeteer: {
       headless: true,
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
       executablePath: '/snap/bin/chromium',
    },
    authStrategy: new LocalAuth(),
-}); */
+});
 
-const client = new Client({
+/* const client = new Client({
    puppeteer: {
       headless: true,
       executablePath:
          'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
    },
    authStrategy: new LocalAuth(),
-});
+}); */
 
 //socket.io setup
 io.on('connection', (socket) => {
