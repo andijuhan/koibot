@@ -19,23 +19,23 @@ app.get('/', (req, res) => {
    res.sendFile('index.html', { root: __dirname });
 });
 
-const client = new Client({
+/* const client = new Client({
    puppeteer: {
       headless: true,
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
       executablePath: '/snap/bin/chromium',
    },
    authStrategy: new LocalAuth(),
-});
+}); */
 
-/* const client = new Client({
+const client = new Client({
    puppeteer: {
       headless: true,
       executablePath:
          'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
    },
    authStrategy: new LocalAuth(),
-}); */
+});
 
 //socket.io setup
 io.on('connection', (socket) => {
@@ -628,11 +628,14 @@ client.on('message', async (message) => {
    }
 });
 
+//hitung mundur 10 menit
 const startTimer = (groupId) => {
+   //jika ada yg bid, reset hitung mundur ke 10 menit lgi
    if (addExtraTime && count > 0) {
-      count += 10;
+      count = 10;
       addExtraTime = false;
    }
+   //jika belum ada yg bid, beri nilai awal hitungan mundur 10 menit
    if (count === 0) {
       count = 10;
       const intervalID = setInterval(async () => {
@@ -727,7 +730,7 @@ const rekap = async (groupId) => {
    let rekapStr = `- *Rekap Bid Tertinggi Sementara* -\n=================================\n`;
    let rekapFooter = `\n=================================\n*Close lelang* : \n- Jam 22:10 WIB, ${wa.currentDateTime()}\n- Extratime 10 menit berkelanjutan`;
    let rekapFooterExtraTime = `\n=================================\n*Close lelang* : \n- Extratime 10 menit berkelanjutan\n- Tidak ada bid, *CLOSE ${wa.addSomeMinutes(
-      count
+      count + 1
    )} WIB*\n- Sisa waktu *${count} menit*`;
 
    const rekap = await db.getAllRekapData();
@@ -778,6 +781,7 @@ const auctionWinner = async (groupId) => {
    client.sendMessage(groupId, rekapStr);
 };
 
+//setup waktu closing
 const setClosingAuction = () => {
    const currentHour = new Date().getHours();
    //jika server mengalami error di jam 22 ke atas
@@ -796,7 +800,7 @@ const setClosingAuction = () => {
          console.log('Extra Time');
          extraTime = true;
          if (extraTime) {
-            //jalankan sekali
+            //jalankan hitung mundur 10 menit
             startTimer(groupId);
          }
 
