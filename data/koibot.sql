@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 17, 2023 at 05:33 PM
+-- Generation Time: Mar 18, 2023 at 02:23 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.1.12
 
@@ -41,12 +41,16 @@ CREATE TABLE `media` (
 --
 
 INSERT INTO `media` (`id`, `command`, `reply`, `path`, `media_desc`, `info`) VALUES
-(392, 'kode a', 'a.', NULL, NULL, 'info a'),
-(393, 'kode b', 'b.', NULL, NULL, 'info b'),
-(394, 'kode c', 'c.', NULL, NULL, 'info c'),
-(395, 'kode d', 'd.', NULL, NULL, 'info d'),
-(396, 'kode e', 'e.', NULL, NULL, 'info e'),
-(397, 'kode f', 'f.', NULL, NULL, 'info f');
+(458, 'kode a', 'a.', NULL, NULL, 'info a'),
+(459, 'kode b', 'b.', NULL, NULL, 'info b'),
+(460, 'kode c', 'c.', NULL, NULL, 'info c'),
+(461, 'kode d', 'd.', NULL, NULL, 'info d'),
+(462, 'kode e', 'e.', NULL, NULL, 'info e'),
+(463, 'kode f', 'f.', NULL, NULL, 'info f'),
+(464, 'kode g', 'g.', NULL, NULL, 'info g'),
+(465, 'kode h', 'h.', NULL, NULL, 'info h'),
+(466, 'kode i', 'i.', NULL, NULL, 'info i'),
+(467, 'kode j', 'j.', NULL, NULL, 'info j');
 
 -- --------------------------------------------------------
 
@@ -66,12 +70,16 @@ CREATE TABLE `rekap` (
 --
 
 INSERT INTO `rekap` (`kode_ikan`, `bid`, `bidder`, `bidder_id`) VALUES
-('A', 150, 'Andi', '6281324046606@c.us'),
+('A', 200, 'Andi', '6281324046606@c.us'),
 ('B', NULL, NULL, NULL),
 ('C', NULL, NULL, NULL),
 ('D', NULL, NULL, NULL),
-('E', 100, 'Andi', '6281324046606@c.us'),
-('F', 100, 'Andi', '6281324046606@c.us');
+('E', NULL, NULL, NULL),
+('F', NULL, NULL, NULL),
+('G', NULL, NULL, NULL),
+('H', NULL, NULL, NULL),
+('I', NULL, NULL, NULL),
+('J', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -81,7 +89,7 @@ INSERT INTO `rekap` (`kode_ikan`, `bid`, `bidder`, `bidder_id`) VALUES
 
 CREATE TABLE `setting` (
   `id` int(11) NOT NULL,
-  `info_lelang` varchar(1000) NOT NULL,
+  `info_lelang` varchar(10000) NOT NULL,
   `lelang_status` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -90,7 +98,7 @@ CREATE TABLE `setting` (
 --
 
 INSERT INTO `setting` (`id`, `info_lelang`, `lelang_status`) VALUES
-(1, 'MAHKOTA KOI AUCTION #LELANG ke 1300\n\n▫BACA DENGAN TELITI SAMPAI TUNTAS  SEBELUM MELAKUKAN BID..!!!\n\n\n➡Lelang dimulai saat admin posting ikan\n➡Selesai     :  21.00 wib\n(Perpanjangan 10 menit berlaku kelipatan dari bid trakhir dan seterusnya)\n\nIKAN A\n➡ Jenis        : SHOWA\n➡ Kelamin   :  unchek\n➡ Ukuran     : 17cm\n➡ Breeder    : lokal\n➡ Status       : KUNINGAN\n▶ ket             : \n*OB 100.000 KB 100\n\n\n\n\n\n\nIKAN B\n➡ Jenis        : SHIRO\n➡ Kelamin   : UNCHEK\n➡ Ukuran     : 20CM\n➡ Breeder    : lokal\n➡ Status       : KUNINGAN\n▶ket              : \nOB 100.000 KB 100k\n \n\n\n\n\n▫CEK FOTO & VIDEO  dengan teliti (Tidak menerima komplain apapun setelah lelang selesai)\n▫JIKA RAGU.. Bisa tanyakan admin terlebih dahulu\n\n▫Pembayaran maximal 2x24 jam\n▫Tidak di perbolehkan Bid & Run..!!!\n▫Penitipan ikan max 7hari dari close lelang bilamana ada kepanjangan wktu makan akan dikenakan biaya tambahan\n\n\nHAHPPY BIDDING 🔥🔥', 1);
+(1, 'MAHKOTA KOI AUCTION #LELANG ke 1400\n\n▫BACA DENGAN TELITI SAMPAI TUNTAS  SEBELUM MELAKUKAN BID..!!!\n\n\n➡Lelang dimulai saat admin posting ikan\n➡Selesai     :  21.00 wib\n(Perpanjangan 10 menit berlaku kelipatan dari bid trakhir dan seterusnya)\n\nIKAN A\n➡ Jenis        : SHOWA\n➡ Kelamin   :  unchek\n➡ Ukuran     : 17cm\n➡ Breeder    : lokal\n➡ Status       : KUNINGAN\n▶ ket             : \n*OB 100.000 KB 100\n\n\n\n\n\n\nIKAN B\n➡ Jenis        : SHIRO\n➡ Kelamin   : UNCHEK\n➡ Ukuran     : 20CM\n➡ Breeder    : lokal\n➡ Status       : KUNINGAN\n▶ket              : \nOB 100.000 KB 100k\n \n\n\n\n\n▫CEK FOTO & VIDEO  dengan teliti (Tidak menerima komplain apapun setelah lelang selesai)\n▫JIKA RAGU.. Bisa tanyakan admin terlebih dahulu\n\n▫Pembayaran maximal 2x24 jam\n▫Tidak di perbolehkan Bid & Run..!!!\n▫Penitipan ikan max 7hari dari close lelang bilamana ada kepanjangan wktu makan akan dikenakan biaya tambahan\n\n\nHAHPPY BIDDING 🔥🔥', 1);
 
 --
 -- Indexes for dumped tables
@@ -122,7 +130,7 @@ ALTER TABLE `setting`
 -- AUTO_INCREMENT for table `media`
 --
 ALTER TABLE `media`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=398;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=468;
 
 --
 -- AUTO_INCREMENT for table `setting`
