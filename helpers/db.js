@@ -13,6 +13,17 @@ const pool = mysql.createPool({
    queueLimit: 0,
 });
 
+/* const pool = mysql.createPool({
+   host: 'localhost',
+   user: 'root',
+   database: 'koibot',
+   waitForConnections: true,
+   connectionLimit: 20,
+   maxIdle: 20, // max idle connections, the default value is the same as `connectionLimit`
+   idleTimeout: 60000, // idle connections timeout, in milliseconds, the default value 60000
+   queueLimit: 0,
+}); */
+
 //cek apakah ada command yg sesuai dgn field command di tbl media
 const setMedia = async (command) => {
    const [rows] = await pool.execute(

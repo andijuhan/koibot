@@ -117,7 +117,7 @@ client.on('message', async (message) => {
       setMedia = await db.setMedia(mediaCode);
    }
 
-   if (messageLwcase.includes('info') && messageLwcase.length < 7) {
+   if (messageLwcase.includes('video') && messageLwcase.length < 7) {
       const mediaInfo = await db.getMediaInfo(messageLwcase);
       //info kode ikan - user
       if (mediaInfo !== false && chats.isGroup) {
@@ -221,11 +221,11 @@ client.on('message', async (message) => {
       }
    }
 
-   if (messageLwcase.includes('video') && isAuctionStarting) {
+   /*    if (messageLwcase.includes('video') && isAuctionStarting) {
       message.reply(
          '*[BOT]* Untuk cek video dan deskripsi Ikan, silahkan ketik *info kode*'
       );
-   }
+   } */
 
    //setup info lelang
    if (
@@ -619,7 +619,7 @@ client.on('message', async (message) => {
       }
    }
 
-   if (messageLwcase === 'info rekap') {
+   if (messageLwcase === 'info rekap' || messageLwcase === 'rekap') {
       if (isAuctionStarting) {
          rekap(groupId);
       } else {
@@ -728,7 +728,7 @@ const startTimer = (groupId) => {
 
 const rekap = async (groupId) => {
    let rekapStr = `- *Rekap Bid Tertinggi Sementara* -\n=================================\n`;
-   let rekapFooter = `\n=================================\n*Close lelang* : \n- Jam 22:10 WIB, ${wa.currentDateTime()}\n- Extratime 10 menit berkelanjutan`;
+   let rekapFooter = `\n=================================\n*Close lelang* : \n- Jam 22:11 WIB, ${wa.currentDateTime()}\n- Extratime 10 menit berkelanjutan`;
    let rekapFooterExtraTime = `\n=================================\n*Close lelang* : \n- Extratime 10 menit berkelanjutan\n- Tidak ada bid, *CLOSE ${wa.addSomeMinutes(
       count + 1
    )} WIB*\n- Sisa waktu *${count} menit*`;
@@ -808,7 +808,7 @@ const setClosingAuction = () => {
          client.sendMessage(groupId, '*[BOT]* Memasuki masa extra time.');
          client.sendMessage(
             groupId,
-            '*[BOT]* Tidak ada bid *closed* jam 22:10.'
+            '*[BOT]* Tidak ada bid *closed* jam 22:11.'
          );
       });
    }
