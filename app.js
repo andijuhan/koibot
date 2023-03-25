@@ -117,7 +117,7 @@ client.on('message', async (message) => {
       setMedia = await db.setMedia(mediaCode);
    }
 
-   if (messageLwcase.includes('video') && messageLwcase.length < 7) {
+   if (messageLwcase.includes('info') && messageLwcase.length < 7) {
       const mediaInfo = await db.getMediaInfo(messageLwcase);
       //info kode ikan - user
       if (mediaInfo !== false && chats.isGroup) {
@@ -221,11 +221,11 @@ client.on('message', async (message) => {
       }
    }
 
-   /*    if (messageLwcase.includes('video') && isAuctionStarting) {
+   if (messageLwcase.includes('video') && isAuctionStarting) {
       message.reply(
          '*[BOT]* Untuk cek video dan deskripsi Ikan, silahkan ketik *info kode*'
       );
-   } */
+   }
 
    //setup info lelang
    if (
