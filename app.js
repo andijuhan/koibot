@@ -796,12 +796,14 @@ const setClosingAuction = () => {
    }
    if (currentHour < 22) {
       console.log('Berhasil set waktu closing');
-      cron.schedule('0 22 * * *', async function () {
+      cron.schedule('1 22 * * *', async function () {
          console.log('Extra Time');
          extraTime = true;
          if (extraTime) {
             //jalankan hitung mundur 10 menit
-            startTimer(groupId);
+            setTimeout(() => {
+               startTimer(groupId);
+            }, 60000);
          }
 
          //kirim notif ke grup
