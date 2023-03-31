@@ -351,6 +351,7 @@ client.on('message', async (message) => {
       const codeArr = codeStr.split('');
       //perintah all ob
       if (messageNoSpace === 'allob') {
+         addExtraTime = true;
          const isCanAllOb = await db.checkIsCanAllOb();
          console.log(isCanAllOb);
          if (isCanAllOb === false) {
@@ -419,6 +420,7 @@ client.on('message', async (message) => {
 
       //perintah all ob
       if (messageNoSpace === 'allkb') {
+         addExtraTime = true;
          const dataRekap = await db.getAllRekapData();
          if (dataRekap !== false) {
             dataRekap.map((item, index) => {
@@ -640,7 +642,7 @@ const startTimer = (groupId) => {
       count = 10;
       const intervalID = setInterval(async () => {
          count--;
-         if (count < 0) {
+         if (count === -1) {
             //reset info lelang
             await db.setInfoLelang('');
             info = '';
@@ -679,47 +681,52 @@ const startTimer = (groupId) => {
          } else if (count === 9) {
             client.sendMessage(
                groupId,
-               '*[BOT]* Lelang *closed* dalam 9 menit.'
+               '*[BOT]* Lelang *closed* dalam 9 menit 50 detik.'
             );
          } else if (count === 8) {
             client.sendMessage(
                groupId,
-               '*[BOT]* Lelang *closed* dalam 8 menit.'
+               '*[BOT]* Lelang *closed* dalam 8 menit 50 detik.'
             );
          } else if (count === 7) {
             client.sendMessage(
                groupId,
-               '*[BOT]* Lelang *closed* dalam 7 menit.'
+               '*[BOT]* Lelang *closed* dalam 7 menit 50 detik.'
             );
          } else if (count === 6) {
             client.sendMessage(
                groupId,
-               '*[BOT]* Lelang *closed* dalam 6 menit.'
+               '*[BOT]* Lelang *closed* dalam 6 menit 50 detik.'
             );
          } else if (count === 5) {
             client.sendMessage(
                groupId,
-               '*[BOT]* Lelang *closed* dalam 5 menit.'
+               '*[BOT]* Lelang *closed* dalam 5 menit 50 detik.'
             );
          } else if (count === 4) {
             client.sendMessage(
                groupId,
-               '*[BOT]* Lelang *closed* dalam 4 menit.'
+               '*[BOT]* Lelang *closed* dalam 4 menit 50 detik.'
             );
          } else if (count === 3) {
             client.sendMessage(
                groupId,
-               '*[BOT]* Lelang *closed* dalam 3 menit.'
+               '*[BOT]* Lelang *closed* dalam 3 menit 50 detik.'
             );
          } else if (count === 2) {
             client.sendMessage(
                groupId,
-               '*[BOT]* Lelang *closed* dalam 2 menit.'
+               '*[BOT]* Lelang *closed* dalam 2 menit 50 detik.'
             );
          } else if (count === 1) {
             client.sendMessage(
                groupId,
-               '*[BOT]* Lelang *closed* dalam 1 menit.'
+               '*[BOT]* Lelang *closed* dalam 1 menit 50 detik.'
+            );
+         } else if (count === 0) {
+            client.sendMessage(
+               groupId,
+               '*[BOT]* Lelang *closed* dalam 50 detik.'
             );
          }
       }, 1000 * 60);
@@ -797,7 +804,7 @@ const setClosingAuction = () => {
    }
    if (currentHour < 22) {
       console.log('Berhasil set waktu closing');
-      cron.schedule('0 22 * * *', async function () {
+      cron.schedule('1 22 * * *', async function () {
          console.log('Extra Time');
          extraTime = true;
          if (extraTime) {
