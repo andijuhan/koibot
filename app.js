@@ -63,7 +63,7 @@ io.on('connection', (socket) => {
 
 //auction setup
 let ob = 100;
-let kb = 50;
+let kb = 100;
 let isAuctionStarting;
 let info;
 let userChat;
@@ -640,7 +640,7 @@ const startTimer = (groupId) => {
       count = 10;
       const intervalID = setInterval(async () => {
          count--;
-         if (count <= 0) {
+         if (count < 0) {
             //reset info lelang
             await db.setInfoLelang('');
             info = '';
@@ -648,11 +648,14 @@ const startTimer = (groupId) => {
             await db.setStatusLelang(0);
             isAuctionStarting = 0;
             //notifikasi lelang telah berakhir
-            client.sendMessage(
-               groupId,
-               `*[BOT]* Lelang *closed* ${wa.currentDateTime()}`
-            );
-            auctionWinner(groupId);
+            setTimeout(() => {
+               client.sendMessage(
+                  groupId,
+                  `*[BOT]* Lelang *closed* ${wa.currentDateTime()}`
+               );
+               auctionWinner(groupId);
+            }, 10000);
+
             //kirim notif ke pemenang lelang
             const rekapData = await db.getAllRekapData();
 
@@ -796,14 +799,12 @@ const setClosingAuction = () => {
    }
    if (currentHour < 22) {
       console.log('Berhasil set waktu closing');
-      cron.schedule('1 22 * * *', async function () {
+      cron.schedule('0 22 * * *', async function () {
          console.log('Extra Time');
          extraTime = true;
          if (extraTime) {
             //jalankan hitung mundur 10 menit
-            setTimeout(() => {
-               startTimer(groupId);
-            }, 60000);
+            startTimer(groupId);
          }
 
          //kirim notif ke grup
