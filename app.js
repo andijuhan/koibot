@@ -648,13 +648,11 @@ const startTimer = (groupId) => {
             await db.setStatusLelang(0);
             isAuctionStarting = 0;
             //notifikasi lelang telah berakhir
-            setTimeout(() => {
-               client.sendMessage(
-                  groupId,
-                  `*[BOT]* Lelang *closed* ${wa.currentDateTime()}`
-               );
-               auctionWinner(groupId);
-            }, 10000);
+            client.sendMessage(
+               groupId,
+               `*[BOT]* Lelang *closed* ${wa.currentDateTime()}`
+            );
+            auctionWinner(groupId);
 
             //kirim notif ke pemenang lelang
             const rekapData = await db.getAllRekapData();
