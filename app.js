@@ -771,7 +771,7 @@ const rekap = async (groupId) => {
 
 const auctionWinner = async (groupId) => {
    let rekapStr = `- *Selamat Kepada Pemenang Lelang Hari ini* -\n- ${wa.currentDateTime()}\n==============================\n`;
-   let rekapFooter = `\nSilahkan konfirmasi ke *admin* \nklik wa.me/6282214871668\n\n*Pembayaran ke rekening: * \n-BCA an. Mumu Abdul Muti 2990769934\n\n*Pembayaran maksimal 2 hari*\nPenitipan 6 hari, Luar pulau 12 hari\n\n*Trimakasih.*\nAdmin`;
+   let rekapFooter = `\nSilahkan konfirmasi ke *admin* \nklik wa.me/6282214871668\n\n*Pembayaran ke rekening: * \n-BCA a/n Hanny Wijaya 3440523365\n\n*Pembayaran maksimal 2 hari*\nPenitipan 6 hari, Luar pulau 12 hari\n\n*Trimakasih.*\nAdmin`;
    const rekap = await db.getAllRekapData();
 
    rekap?.map((item, index) => {
