@@ -9,7 +9,7 @@ const jumpBidPrice = [
    9300, 9400, 9500, 9600, 9700, 9800, 9900, 10000,
 ];
 
-const groupName = 'Rajabot Testing';
+const groupName = "PRATAMA MO' KOI (Auction)";
 
 const admins = ['6281324046606@c.us', '6282214871668@c.us'];
 
