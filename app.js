@@ -95,7 +95,7 @@ client.on('group_join', (notification) => {
    // User has joined or been added to the group.
    console.log(notification);
    notification.reply(
-      `Selamat datang di grup *Mahkota Koi*\nKetik *info lelang* untuk cek detail lelang.`
+      `Selamat datang di grup *PRATAMA MO' KOI (Auction)*\nKetik *info lelang* untuk cek detail lelang.`
    );
 });
 
