@@ -1,7 +1,7 @@
 const mysql = require('mysql2/promise');
 require('dotenv').config();
 
-const pool = mysql.createPool({
+/* const pool = mysql.createPool({
    host: '127.0.0.1',
    user: process.env.DB_USER,
    password: process.env.DB_PASS,
@@ -11,9 +11,9 @@ const pool = mysql.createPool({
    maxIdle: 20, // max idle connections, the default value is the same as `connectionLimit`
    idleTimeout: 60000, // idle connections timeout, in milliseconds, the default value 60000
    queueLimit: 0,
-});
+}); */
 
-/* const pool = mysql.createPool({
+const pool = mysql.createPool({
    host: 'localhost',
    user: 'root',
    database: 'koibot',
@@ -22,7 +22,7 @@ const pool = mysql.createPool({
    maxIdle: 20, // max idle connections, the default value is the same as `connectionLimit`
    idleTimeout: 60000, // idle connections timeout, in milliseconds, the default value 60000
    queueLimit: 0,
-}); */
+});
 
 //cek apakah ada command yg sesuai dgn field command di tbl media
 const setMedia = async (command) => {

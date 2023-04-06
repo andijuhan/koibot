@@ -19,23 +19,23 @@ app.get('/', (req, res) => {
    res.sendFile('index.html', { root: __dirname });
 });
 
-const client = new Client({
+/* const client = new Client({
    puppeteer: {
       headless: true,
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
       executablePath: '/snap/bin/chromium',
    },
    authStrategy: new LocalAuth(),
-});
+}); */
 
-/* const client = new Client({
+const client = new Client({
    puppeteer: {
       headless: true,
       executablePath:
          'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
    },
    authStrategy: new LocalAuth(),
-}); */
+});
 
 //socket.io setup
 io.on('connection', (socket) => {
@@ -156,6 +156,32 @@ client.on('message', async (message) => {
       message.reply('Bot sedang aktif.');
    }
 
+   if (
+      messageLwcase.includes('set ob') &&
+      chats.isGroup === false &&
+      adminBot
+   ) {
+      let setOb = messageLwcase.match(/(\d+)/);
+      if (setOb) {
+         ob = setOb[0];
+         message.reply(`Berhasil setting OB : ${ob}`);
+         console.log(ob);
+      }
+   }
+
+   if (
+      messageLwcase.includes('set kb') &&
+      chats.isGroup === false &&
+      adminBot
+   ) {
+      let setKb = messageLwcase.match(/(\d+)/);
+      if (setKb) {
+         kb = setKb[0];
+         message.reply(`Berhasil setting KB : ${kb}`);
+         console.log(kb);
+      }
+   }
+
    //setup media - admin
    if (
       setMedia !== false &&
@@ -168,7 +194,7 @@ client.on('message', async (message) => {
       const ext = attachmentData.mimetype.split('/');
       //simpan info media ke database
       const path = './upload/' + setMedia + ext[1];
-      const desc = message.body;
+      const desc = message.body.replace(mediaCode, `*${mediaCode}*`);
 
       db.setMediaPath(path, desc, setMedia);
       //simpan ke server
@@ -344,13 +370,24 @@ client.on('message', async (message) => {
          message.reply('*[BOT]* Lelang belum dimulai. Silahkan hubungi admin.');
          return;
       }
-      //hapus space di chat
-      const messageNoSpace = messageLwcase.split(' ').join('');
-      const obPosition = messageNoSpace.search('ob');
-      const codeStr = messageNoSpace.slice(0, obPosition);
+      //remove space
+      let messageOb = messageLwcase.split(' ').join('');
+      //remove coma
+      messageOb = messageOb.replace(/,/g, '');
+      //remove dot
+      messageOb = messageOb.replace(/./g, '');
+
+      const obPosition = messageOb.search('ob');
+      const codeStr = messageOb.slice(0, obPosition);
       const codeArr = codeStr.split('');
+
+      //jika jumlah karakter pisan lebih besar dari jumlah kota ikan + ob
+      if (messageOb > codeArr.length + 2) {
+         message.reply('*[BOT]* Format OB salah. Silahkan ketik *bantuan*');
+         return;
+      }
       //perintah all ob
-      if (messageNoSpace === 'allob') {
+      if (messageOb === 'allob') {
          addExtraTime = true;
          const isCanAllOb = await db.checkIsCanAllOb();
          console.log(isCanAllOb);
@@ -673,7 +710,7 @@ const startTimer = (groupId) => {
                   //kirim info pembayaran
                   client.sendMessage(
                      bidder_id,
-                     `- *PESAN OTOMATIS DARI BOT* -\n==============================\nSilahkan konfirmasi ke *admin* \nklik wa.me/6282214871668\n==============================\n\n*Pembayaran ke rekening: * \n-BCA an. Mumu Abdul Muti 2990769934\n\n*Pembayaran maksimal 2 hari*\nPenitipan 6 hari, Luar pulau 12 hari\n\n*Trimakasih.*\nAdmin`
+                     `- *PESAN OTOMATIS DARI BOT* -\n==============================\nSilahkan konfirmasi ke *admin* \nklik wa.me/6282214871668\n==============================\n\n*Pembayaran ke rekening: * \n-BCA an. Hanny Wijaya 3440523365\n\n*Pembayaran maksimal 2 hari*\nPenitipan 6 hari, Luar pulau 12 hari\n\n*Trimakasih.*\nAdmin`
                   );
                }
             });
