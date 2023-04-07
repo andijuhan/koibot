@@ -19,23 +19,23 @@ app.get('/', (req, res) => {
    res.sendFile('index.html', { root: __dirname });
 });
 
-/* const client = new Client({
+const client = new Client({
    puppeteer: {
       headless: true,
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
       executablePath: '/snap/bin/chromium',
    },
    authStrategy: new LocalAuth(),
-}); */
+});
 
-const client = new Client({
+/* const client = new Client({
    puppeteer: {
       headless: true,
       executablePath:
          'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
    },
    authStrategy: new LocalAuth(),
-});
+}); */
 
 //socket.io setup
 io.on('connection', (socket) => {
@@ -375,17 +375,12 @@ client.on('message', async (message) => {
       //remove coma
       messageOb = messageOb.replace(/,/g, '');
       //remove dot
-      messageOb = messageOb.replace(/./g, '');
+      messageOb = messageOb.replace(/\./g, '');
 
       const obPosition = messageOb.search('ob');
       const codeStr = messageOb.slice(0, obPosition);
       const codeArr = codeStr.split('');
 
-      //jika jumlah karakter pisan lebih besar dari jumlah kota ikan + ob
-      if (messageOb > codeArr.length + 2) {
-         message.reply('*[BOT]* Format OB salah. Silahkan ketik *bantuan*');
-         return;
-      }
       //perintah all ob
       if (messageOb === 'allob') {
          addExtraTime = true;
@@ -398,6 +393,12 @@ client.on('message', async (message) => {
          db.allOb(ob, message.rawData.notifyName, message.author);
          message.reply('*[BOT]* Bid *SAH*. Trimakasih 🤝');
          setTimeout(() => rekap(groupId), 3000);
+         return;
+      }
+
+      //jika jumlah karakter pisan lebih besar dari jumlah kota ikan + ob
+      if (messageOb.length > codeArr.length + 2) {
+         message.reply('*[BOT]* Format OB salah. Silahkan ketik *bantuan*');
          return;
       }
       //jika memasuki ekstra time, buat hitungan mundur 10 menit
@@ -450,13 +451,18 @@ client.on('message', async (message) => {
          return;
       }
       //hapus space di chat
-      const messageNoSpace = messageLwcase.split(' ').join('');
-      const obPosition = messageNoSpace.search('kb');
-      const codeStr = messageNoSpace.slice(0, obPosition);
+      let messageKb = messageLwcase.split(' ').join('');
+      //remove coma
+      messageKb = messageKb.replace(/,/g, '');
+      //remove dot
+      messageKb = messageKb.replace(/\./g, '');
+
+      const obPosition = messageKb.search('kb');
+      const codeStr = messageKb.slice(0, obPosition);
       const codeArr = codeStr.split('');
 
       //perintah all ob
-      if (messageNoSpace === 'allkb') {
+      if (messageKb === 'allkb') {
          addExtraTime = true;
          const dataRekap = await db.getAllRekapData();
          if (dataRekap !== false) {
@@ -494,6 +500,12 @@ client.on('message', async (message) => {
 
          message.reply('*[BOT]* Bid *SAH*. Trimakasih 🤝');
          setTimeout(() => rekap(groupId), 3000);
+         return;
+      }
+
+      //jika jumlah karakter pisan lebih besar dari jumlah kota ikan + ob
+      if (messageKb.length > codeArr.length + 2) {
+         message.reply('*[BOT]* Format KB salah. Silahkan ketik *bantuan*');
          return;
       }
 
