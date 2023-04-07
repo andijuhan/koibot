@@ -163,7 +163,7 @@ client.on('message', async (message) => {
    ) {
       let setOb = messageLwcase.match(/(\d+)/);
       if (setOb) {
-         ob = setOb[0];
+         ob = Number(setOb[0]);
          message.reply(`Berhasil setting OB : ${ob}`);
          console.log(ob);
       }
@@ -176,7 +176,7 @@ client.on('message', async (message) => {
    ) {
       let setKb = messageLwcase.match(/(\d+)/);
       if (setKb) {
-         kb = setKb[0];
+         kb = Number(setKb[0]);
          message.reply(`Berhasil setting KB : ${kb}`);
          console.log(kb);
       }
@@ -470,7 +470,7 @@ client.on('message', async (message) => {
                let bid = dataRekap[index].bid;
 
                if (bid === null) {
-                  bid = 100;
+                  bid = ob;
                }
                const kode = dataRekap[index].kode_ikan;
                const bidder_id = dataRekap[index].bidder_id;
@@ -529,7 +529,7 @@ client.on('message', async (message) => {
          if (getRekapData?.length > 0) {
             let bid = getRekapData[0].bid;
             if (bid === null) {
-               bid = 100;
+               bid = ob;
             }
             const bidder_id = getRekapData[0].bidder_id;
 
@@ -638,16 +638,14 @@ client.on('message', async (message) => {
    if (messageLwcase === 'bantuan' && chats.isGroup) {
       const head = '- *DAFTAR COMMAND BOT LELANG* -';
       const obCom =
-         '*KODE OB* : Open Bid. Contoh: A OB / ABC OB (OB beberapa ikan) / ALL OB (OB semua ikan)';
+         'Open Bid. Contoh: A OB / ABC OB (OB beberapa ikan) / ALL OB (OB semua ikan)';
       const kbCom =
-         '*KODE KB* : Kelipatan Bid. Contoh: A KB / ABC KB (KB beberapa ikan) / ALL KB (KB semua ikan)';
+         'Kelipatan Bid. Contoh: A KB / ABC KB (KB beberapa ikan) / ALL KB (KB semua ikan)';
       const jbCom =
-         '*KODE NILAI_BID* : Jump Bid. Contoh: A 600 (Kelipatan 100) / ABC 500 (Jump Bid beberapa ikan)';
-      const infoImg =
-         '*INFO KODE* : Cek foto/video Ikan & deskripsi Ikan. Contoh: INFO A';
-      const infoLel =
-         '*INFO LELANG* : Info lelang hari ini. Contoh: INFO LELANG';
-      const infoRekap = '*INFO REKAP* : Info rekap terbaru. Contoh: INFO REKAP';
+         'Jump Bid. Contoh: A 600 (Kelipatan 100) / ABC 500 (Jump Bid beberapa ikan)';
+      const infoImg = 'Cek video Ikan. Contoh: INFO A';
+      const infoLel = 'Info lelang hari ini. Contoh: INFO LELANG';
+      const infoRekap = 'Info rekap terbaru. Contoh: INFO REKAP';
 
       client.sendMessage(message.from, head);
       client.sendMessage(message.from, obCom);
