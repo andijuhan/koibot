@@ -63,7 +63,7 @@ io.on('connection', (socket) => {
 
 //auction setup
 let ob = 100;
-let kb = 100;
+let kb = 50;
 let isAuctionStarting;
 let info;
 let userChat;
