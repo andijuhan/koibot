@@ -23,5 +23,8 @@
       "socket.io": "^4.5.4",
       "whatsapp-web.js": "^1.19.2",
       "wwebjs-mongo": "^1.1.0"
+   },
+   "devDependencies": {
+      "eslint": "^8.40.0"
    }
 }

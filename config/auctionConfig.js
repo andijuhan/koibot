@@ -1,3 +1,13 @@
+let OB = 100;
+let KB = 50;
+let INFO = '';
+let isAuctionStarting;
+let groupId;
+let extraTime = false;
+let count = 0;
+let addExtraTime = false;
+let setMedia;
+
 const jumpBidPrice = [
    100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400,
    1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600, 2700,
@@ -9,8 +19,8 @@ const jumpBidPrice = [
    9300, 9400, 9500, 9600, 9700, 9800, 9900, 10000,
 ];
 
-const groupName = "PRATAMA MO' KOI (Auction)";
-//const groupName = 'Rajabot Testing';
+//const groupName = "PRATAMA MO' KOI (Auction)";
+const groupName = 'Rajabot Testing';
 
 const admins = ['6281324046606@c.us', '6282214871668@c.us'];
 
@@ -18,4 +28,13 @@ module.exports = {
    jumpBidPrice,
    groupName,
    admins,
+   OB,
+   KB,
+   INFO,
+   isAuctionStarting,
+   groupId,
+   extraTime,
+   count,
+   addExtraTime,
+   setMedia,
 };

@@ -1,5 +1,6 @@
-const data = require('../data/data');
+const data = require('../config/auctionConfig');
 const date = require('date-and-time');
+const config = require('../config/auctionConfig');
 
 const getGroupId = (userChat) => {
    const groupObj = userChat
@@ -29,7 +30,7 @@ const addSomeMinutes = (minutes) => {
    return hourFormat;
 };
 
-const generateFishCode = (num) => {
+const generateCode = (num) => {
    if (num > 0 && num <= 20) {
       const alpha = Array.from(Array(num)).map((e, i) => i + 65);
       const alphabet = alpha.map((x) => String.fromCharCode(x));
@@ -37,9 +38,18 @@ const generateFishCode = (num) => {
    }
 };
 
+const isAdminBot = (message) => {
+   const adminBot = config.admins.find((admin) => {
+      return admin === message.rawData.from;
+   });
+
+   return adminBot;
+};
+
 module.exports = {
    getGroupId,
    currentDateTime,
-   generateFishCode,
+   generateCode,
    addSomeMinutes,
+   isAdminBot,
 };
