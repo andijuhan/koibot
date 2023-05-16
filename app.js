@@ -76,6 +76,8 @@ client.on('message', async (message) => {
    adminInputLib.auctionSetup(client, message, chats);
    //admin start lelang
    adminInputLib.auctionStart(client, message, chats);
+   //admin tutup lelang paksa
+   adminInputLib.closeAuction(message, chats);
 
    //USER MESSAGE COMMAND--------------------------------------------------------
    //user check video
