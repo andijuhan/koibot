@@ -34,9 +34,10 @@ const setMediaPath = async (path, desc, setMediaReply) => {
 };
 
 const getMediaInfo = async (info) => {
-   const [rows] = await pool.execute('SELECT * FROM `media` WHERE `info` = ?', [
-      info,
-   ]);
+   const [rows] = await pool.execute(
+      'SELECT * FROM `media` WHERE `command` = ?',
+      [info]
+   );
    if (rows.length > 0) {
       return rows[0];
    } else return false;
@@ -51,33 +52,34 @@ const getAllMediaInfo = async () => {
    } else return false;
 };
 
-const cleanRekapData = async () => {
-   await pool.query('DELETE FROM `rekap`');
+const cleanDataRecap = async () => {
+   await pool.query('DELETE FROM `recap`');
 };
 
 const resetMedia = async (codes) => {
-   const [rows] = await pool.execute('DELETE FROM `media`');
+   await pool.execute('DELETE FROM `media`');
 
-   if (rows.affectedRows > 0) {
+   const timerId = setTimeout(() => {
       codes.map(async (item, index) => {
          await pool.execute(
-            'INSERT INTO media (command, reply, info) VALUES (?, ?, ?)',
+            'INSERT INTO media (command, reply) VALUES (?, ?)',
             [
                `video ${codes[index].toLocaleLowerCase()}`,
                `${codes[index].toLocaleLowerCase()}.`,
-               `video ${codes[index].toLocaleLowerCase()}`,
             ]
          );
       });
-   }
+
+      clearTimeout(timerId);
+   }, 2000);
 };
 
-const fillRekap = async (code) => {
-   await pool.execute('INSERT INTO rekap (kode_ikan) VALUES (?)', [code]);
+const fillRecap = async (code) => {
+   await pool.execute('INSERT INTO recap (auction_code) VALUES (?)', [code]);
 };
 
-const getAllRekapData = async () => {
-   const [rows] = await pool.execute('SELECT * FROM `rekap`');
+const getAllDataRecap = async () => {
+   const [rows] = await pool.execute('SELECT * FROM `recap`');
    if (rows.length > 0) {
       return rows;
    } else return false;
@@ -85,7 +87,7 @@ const getAllRekapData = async () => {
 
 const checkBid = async (code) => {
    const [rows] = await pool.execute(
-      'SELECT * FROM `rekap` WHERE `kode_ikan` = ?',
+      'SELECT * FROM `recap` WHERE `auction_code` = ?',
       [code]
    );
    if (rows.length > 0) {
@@ -93,23 +95,23 @@ const checkBid = async (code) => {
    } else return false;
 };
 
-const setRekap = async (bid, bidder, bidder_id, kode_ikan) => {
+const setRecap = async (bid, bidder, bidderId, code) => {
    await pool.execute(
-      'UPDATE `rekap` SET `bid` = ?, bidder = ?, bidder_id = ? WHERE kode_ikan = ?',
-      [bid, bidder, bidder_id, kode_ikan]
+      'UPDATE `recap` SET `bid` = ?, bidder = ?, bidder_id = ? WHERE auction_code = ?',
+      [bid, bidder, bidderId, code]
    );
 };
 
-const allOb = async (bid, bidder, bidder_id) => {
+const allOb = async (bid, bidder, bidderId) => {
    await pool.execute(
-      'UPDATE `rekap` SET `bid` = ?, bidder = ?, bidder_id = ? WHERE `bid` IS NULL',
-      [bid, bidder, bidder_id]
+      'UPDATE `recap` SET `bid` = ?, bidder = ?, bidder_id = ? WHERE `bid` IS NULL',
+      [bid, bidder, bidderId]
    );
 };
 
 const checkIsCanAllOb = async () => {
    const [rows] = await pool.execute(
-      'SELECT `bid` FROM `rekap` WHERE `bid` IS NULL'
+      'SELECT `bid` FROM `recap` WHERE `bid` IS NULL'
    );
    if (rows.length > 0) {
       return rows;
@@ -123,13 +125,13 @@ const getSetting = async () => {
    } else return false;
 };
 
-const setInfoLelang = async (info_lelang) => {
-   await pool.execute('UPDATE `setting` SET `info_lelang` = ?', [info_lelang]);
+const setAuctionInfo = async (AuctionInfo) => {
+   await pool.execute('UPDATE `setting` SET `auction_info` = ?', [AuctionInfo]);
 };
 
-const setStatusLelang = async (lelang_status) => {
-   await pool.execute('UPDATE `setting` SET `lelang_status` = ?', [
-      lelang_status,
+const setAuctionStatus = async (auctionStatus) => {
+   await pool.execute('UPDATE `setting` SET `auction_status` = ?', [
+      auctionStatus,
    ]);
 };
 
@@ -138,15 +140,15 @@ module.exports = {
    setMediaPath,
    getMediaInfo,
    getAllMediaInfo,
-   cleanRekapData,
-   fillRekap,
-   getAllRekapData,
+   cleanDataRecap,
+   fillRecap,
+   getAllDataRecap,
    checkBid,
-   setRekap,
+   setRecap,
    resetMedia,
    allOb,
    checkIsCanAllOb,
    getSetting,
-   setInfoLelang,
-   setStatusLelang,
+   setAuctionInfo,
+   setAuctionStatus,
 };
