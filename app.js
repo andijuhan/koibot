@@ -16,7 +16,7 @@ const app = express();
 const server = http.createServer(app);
 const ioServer = socketIo(server);
 
-app.get('/', (res) => {
+app.get('/', (req, res) => {
    res.sendFile('index.html', { root: __dirname });
 });
 
