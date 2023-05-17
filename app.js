@@ -6,9 +6,9 @@ const db = require('./helpers/database');
 const config = require('./config/auctionConfig');
 const whatsappClient = require('./config/clientConfig');
 const socketConfig = require('./config/socketIoConfig');
-const adminInputLib = require('./lib/adminInput');
-const userInputLib = require('./lib/userInput');
-const clientEvent = require('./lib/clientEvent');
+const adminInput = require('./lib/adminInput');
+const userInput = require('./lib/userInput');
+const clientEvents = require('./lib/clientEvents');
 
 process.env.TZ = 'Asia/Bangkok';
 
@@ -24,7 +24,7 @@ const client = whatsappClient.client;
 
 socketConfig.socketSetup(ioServer, client);
 
-clientEvent.clientEvent(client);
+clientEvents.handle(client);
 
 client.on('message', async (message) => {
    const chats = await message.getChat();
@@ -37,33 +37,33 @@ client.on('message', async (message) => {
 
    //ADMIN MESSAGE COMMAND--------------------------------------------------------
    //admin set OB
-   adminInputLib.setOB(message, chats);
+   adminInput.setOB(message, chats);
    //admin set KB
-   adminInputLib.setKB(message, chats);
+   adminInput.setKB(message, chats);
    //admin setup video
-   adminInputLib.setupVideo(client, message, chats);
+   adminInput.setupVideo(client, message, chats);
    //admin send video to group
-   adminInputLib.sendVideoToGroup(client, message, chats);
+   adminInput.sendVideoToGroup(client, message, chats);
    //admin save info lelang
-   adminInputLib.setupAuctionInfo(client, message, chats);
+   adminInput.setupAuctionInfo(client, message, chats);
    //admin setup lelang
-   adminInputLib.auctionSetup(client, message, chats);
+   adminInput.auctionSetup(client, message, chats);
    //admin start lelang
-   adminInputLib.auctionStart(client, message, chats);
+   adminInput.auctionStart(client, message, chats);
    //admin tutup lelang paksa
-   adminInputLib.closeAuction(message, chats);
+   adminInput.closeAuction(message, chats);
 
    //USER MESSAGE COMMAND--------------------------------------------------------
    //user check video
-   userInputLib.checkVideo(client, message, chats);
+   userInput.checkVideo(client, message, chats);
    //user OB
-   userInputLib.OBHandle(client, message, chats);
+   userInput.OBHandle(client, message, chats);
    //user KB
-   userInputLib.KBHandle(client, message, chats);
+   userInput.KBHandle(client, message, chats);
    //user jump bid
-   userInputLib.jumpBidHandle(client, message, chats);
+   userInput.jumpBidHandle(client, message, chats);
    //user helper
-   userInputLib.helper(client, message, chats);
+   userInput.helper(client, message, chats);
 });
 
 client.initialize();
