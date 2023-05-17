@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 let OB = 100;
 let KB = 50;
 let INFO = '';
@@ -7,6 +8,7 @@ let extraTime = false;
 let count = 0;
 let addExtraTime = false;
 let setMedia;
+const auctionGroups = ["PRATAMA MO' KOI (Auction)", '*MAHKOTA KOI AUCTION*'];
 
 const jumpBidPrice = [
    100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400,
@@ -19,8 +21,10 @@ const jumpBidPrice = [
    9300, 9400, 9500, 9600, 9700, 9800, 9900, 10000,
 ];
 
-//const groupName = "PRATAMA MO' KOI (Auction)";
-const groupName = 'Rajabot Testing';
+const groupName =
+   process.env.NODE_ENV === 'development'
+      ? 'Rajabot Testing'
+      : auctionGroups[0];
 
 const admins = ['6281324046606@c.us', '6282214871668@c.us'];
 
