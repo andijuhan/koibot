@@ -9,6 +9,8 @@ let count = 0;
 let addExtraTime = false;
 let setMedia;
 const auctionGroups = ["PRATAMA MO' KOI (Auction)", '*MAHKOTA KOI AUCTION*'];
+const bankAccount = 'BCA a/n Hanny Wijaya 3440523365';
+const adminContact = 'wa.me/6282214871668';
 
 const jumpBidPrice = [
    100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400,
@@ -45,4 +47,6 @@ module.exports = {
    count,
    addExtraTime,
    setMedia,
+   bankAccount,
+   adminContact,
 };
