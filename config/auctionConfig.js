@@ -26,7 +26,11 @@ const groupName =
       ? 'Rajabot Testing'
       : auctionGroups[0];
 
-const admins = ['6281324046606@c.us', '6282214871668@c.us'];
+const admins = [
+   '6281324046606@c.us',
+   '6282214871668@c.us',
+   '6287715817912@c.us',
+];
 
 module.exports = {
    jumpBidPrice,
