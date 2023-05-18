@@ -50,6 +50,8 @@ client.on('message', async (message) => {
    adminInput.auctionSetup(client, message, chats);
    //admin start lelang
    adminInput.auctionStart(client, message, chats);
+   //admin mengatur no lelang
+   adminInput.setAuctionNumber(client, message, chats);
    //admin tutup lelang paksa
    adminInput.closeAuction(message, chats);
 

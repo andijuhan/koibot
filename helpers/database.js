@@ -135,6 +135,12 @@ const setAuctionStatus = async (auctionStatus) => {
    ]);
 };
 
+const setAuctionNumber = async (auctionNumber) => {
+   await pool.execute('UPDATE `setting` SET `auction_number` = ?', [
+      auctionNumber,
+   ]);
+};
+
 module.exports = {
    setMedia,
    setMediaPath,
@@ -151,4 +157,5 @@ module.exports = {
    getSetting,
    setAuctionInfo,
    setAuctionStatus,
+   setAuctionNumber,
 };
