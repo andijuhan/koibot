@@ -59,7 +59,9 @@ const cleanDataRecap = async () => {
 const resetMedia = async (codes) => {
    await pool.execute('DELETE FROM `media`');
 
-   const timerId = setTimeout(() => {
+   const [rows] = await pool.execute('SELECT * FROM `recap`');
+
+   if (rows.length > 0) {
       codes.map(async (item, index) => {
          await pool.execute(
             'INSERT INTO media (command, reply) VALUES (?, ?)',
@@ -69,9 +71,7 @@ const resetMedia = async (codes) => {
             ]
          );
       });
-
-      clearTimeout(timerId);
-   }, 2000);
+   }
 };
 
 const fillRecap = async (code) => {
