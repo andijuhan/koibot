@@ -1,14 +1,14 @@
 {
-   "name": "koi",
+   "name": "auction-bot",
    "version": "1.0.0",
    "main": "script.js",
    "scripts": {
       "start": "nodemon app.js",
       "test": "echo \"Error: no test specified\" && exit 1"
    },
-   "author": "",
+   "author": "Juhandi",
    "license": "ISC",
-   "description": "",
+   "description": "Bot untuk lelang via whatsapp",
    "dependencies": {
       "date-and-time": "^2.4.2",
       "dotenv": "^16.0.3",
