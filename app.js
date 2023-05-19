@@ -52,6 +52,8 @@ client.on('message', async (message) => {
    adminInput.auctionStart(client, message, chats);
    //admin mengatur no lelang
    adminInput.setAuctionNumber(client, message, chats);
+   //admin mengatur foto rekap
+   adminInput.setRecapImage(client, message, chats);
    //admin tutup lelang paksa
    adminInput.closeAuction(message, chats);
 

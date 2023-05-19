@@ -59,19 +59,12 @@ const cleanDataRecap = async () => {
 const resetMedia = async (codes) => {
    await pool.execute('DELETE FROM `media`');
 
-   const [rows] = await pool.execute('SELECT * FROM `recap`');
-
-   if (rows.length > 0) {
-      codes.map(async (item, index) => {
-         await pool.execute(
-            'INSERT INTO media (command, reply) VALUES (?, ?)',
-            [
-               `video ${codes[index].toLocaleLowerCase()}`,
-               `${codes[index].toLocaleLowerCase()}.`,
-            ]
-         );
-      });
-   }
+   codes.map(async (item, index) => {
+      await pool.execute('INSERT INTO media (command, reply) VALUES (?, ?)', [
+         `video ${codes[index].toLocaleLowerCase()}`,
+         `${codes[index].toLocaleLowerCase()}.`,
+      ]);
+   });
 };
 
 const fillRecap = async (code) => {
@@ -79,7 +72,9 @@ const fillRecap = async (code) => {
 };
 
 const getAllDataRecap = async () => {
-   const [rows] = await pool.execute('SELECT * FROM `recap`');
+   const [rows] = await pool.execute(
+      'SELECT * FROM `recap` ORDER BY `auction_code` ASC'
+   );
    if (rows.length > 0) {
       return rows;
    } else return false;
