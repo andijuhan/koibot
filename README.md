@@ -26,7 +26,8 @@ Kirim pesan ke bot dengan format seperti berikut :
 
 Selanjutnya ketik perintah
 
-```lelang mulai 8
+```
+lelang mulai 8
 
 ```
 
@@ -39,7 +40,8 @@ Contoh saya akan upload video ikan A. Maka cara sebagai berikut :
 
 Pilih video yg akan di upload, gunakan caption
 
-```video a. Deskripsi video
+```
+ideo a. Deskripsi video
 
 ```
 
@@ -53,7 +55,8 @@ Lanjutnya upload video lainnya dengan cara yang sama.
 
 Untuk mengirim video ke grup lelang, ketikan perintah :
 
-```kirim video
+```
+kirim video
 
 ```
 
@@ -61,13 +64,15 @@ Untuk mengirim video ke grup lelang, ketikan perintah :
 
 Untuk setup nilai OB, ketikan perintah :
 
-```set ob 100
+```
+set ob 100
 
 ```
 
 Untuk setup nilai KB, ketikan perintah :
 
-```set kb 50
+```
+set kb 50
 
 ```
 
@@ -81,7 +86,8 @@ Contoh :
 
 Setelah selesai setup lelang, selanjutnya tinggal memulai sesi lelang. Ketikan perintah
 
-```lelang dimulai
+```
+lelang dimulai
 
 ```
 
