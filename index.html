@@ -37,7 +37,10 @@
                ></script>
                <script>
                   $(document).ready(function () {
-                     var socket = io.connect('http://localhost:3000', {
+                     var host = $.extend({}, location).host;
+                     console.log(host);
+
+                     var socket = io.connect(host, {
                         path: '/socket.io',
                      });
 
