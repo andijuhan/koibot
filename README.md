@@ -18,8 +18,11 @@ Bot ini digunakan untuk menjalankan sistem lelang di dalam grup whatsapp. Studi 
 
 ### Setup info lelang
 
-Kirim pesan ke bot dengan format seperti berikut
+Kirim pesan ke bot dengan format seperti berikut :
+
 ![Screenshoot](https://res.cloudinary.com/djlpcw7uf/image/upload/v1684598331/photo_2023-05-20_22-53-41_1_lyqfbb.jpg)
+
+### Setup jumlah ikan lelang
 
 Selanjutnya ketik perintah
 
@@ -28,6 +31,8 @@ Selanjutnya ketik perintah
 ```
 
 8 adalah jumlah ikan yang akan di lelang
+
+### Cara upload video ikan lelang
 
 Upload video ikan yg akan di lelang berdasarkan kode ikan.
 Contoh saya akan upload video ikan A. Maka cara sebagai berikut :
@@ -44,11 +49,15 @@ Contoh lihat di gambar dibawah :
 
 Lanjutnya upload video lainnya dengan cara yang sama.
 
+### Kirim semua video ikan lelang ke grup
+
 Untuk mengirim video ke grup lelang, ketikan perintah :
 
 ```kirim video
 
 ```
+
+### Cara setup nilai OB dan KB
 
 Untuk setup nilai OB, ketikan perintah :
 
@@ -62,11 +71,15 @@ Untuk setup nilai KB, ketikan perintah :
 
 ```
 
+### Cara ganti foto cover rekap
+
 Untuk mengganti foto cover rekap, silahkan upload foto dengan format jpeg, dan gunakan caption cover
 Contoh :
 ![Screenshoot](https://res.cloudinary.com/djlpcw7uf/image/upload/v1684599316/photo_2023-05-20_23-14-36_1_md09nr.jpg)
 
-Untuk memulai sesi lelang. Ketikan perintah
+### Memulai sesi lelang
+
+Setelah selesai setup lelang, selanjutnya tinggal memulai sesi lelang. Ketikan perintah
 
 ```lelang dimulai
 
