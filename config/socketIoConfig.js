@@ -3,7 +3,7 @@ const qrcode = require('qrcode');
 const socketSetup = (ioServer, client) => {
    //socket.io setup
    ioServer.on('connection', (socket) => {
-      socket.emit('message', 'Connecting...');
+      socket.emit('message', 'Connected to server');
 
       client.on('qr', (qr) => {
          console.log('QR RECEIVED', qr);
@@ -20,8 +20,8 @@ const socketSetup = (ioServer, client) => {
 
       client.on('ready', () => {
          console.log('Client is ready!');
-         socket.emit('ready', 'Whatsapp is ready');
-         socket.emit('message', 'Whatsapp is ready');
+         socket.emit('ready', 'Bot is ready');
+         socket.emit('message', 'Bot is ready');
       });
    });
 };

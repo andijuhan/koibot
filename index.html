@@ -4,51 +4,67 @@
       <meta charset="UTF-8" />
       <meta http-equiv="X-UA-Compatible" content="IE=edge" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>Whatsapp Api by JuhanCode</title>
+      <link
+         rel="stylesheet"
+         href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      />
+      <title>Bot Sistem Lelang Group Whatsapp</title>
    </head>
-   <body>
-      <div id="app">
-         <h1>Whatsapp Api</h1>
-         <p>Powered by JuhanCode</p>
-         <img src="" alt="QR Code" id="qrcode" />
-         <h3>Logs:</h3>
-         <ul class="logs"></ul>
+   <body class="bg-light" style="height: 100vh">
+      <div class="container" style="height: 100vh">
+         <div class="d-flex justify-content-center py-4">
+            <div class="col-md-6 bg-white rounded-lg px-4 py-3 shadow-sm">
+               <h2>Bot Sistem Lelang Group Whatsapp</h2>
+               <div id="app" class="card mt-4">
+                  <div class="card-body mx-auto">
+                     <img src="" alt="QR Code" id="qrcode" />
+                  </div>
+               </div>
+               <p class="mt-4 lead">Status :</p>
+               <div class="logs alert alert-primary" role="alert"></div>
+
+               <script
+                  src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"
+                  integrity="sha512-STof4xm1wgkfm7heWqFJVn58Hm3EtS31XFaagaa8VMReCXAkQnJZ+jEy8PCC/iT18dFy95WcExNHFTqLyp72eQ=="
+                  crossorigin="anonymous"
+                  referrerpolicy="no-referrer"
+               ></script>
+               <script
+                  src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.min.js"
+                  integrity="sha512-HTENHrkQ/P0NGDFd5nk6ibVtCkcM7jhr2c7GyvXp5O+4X6O5cQO9AhqFzM+MdeBivsX7Hoys2J7pp2wdgMpCvw=="
+                  crossorigin="anonymous"
+                  referrerpolicy="no-referrer"
+               ></script>
+               <script>
+                  $(document).ready(function () {
+                     var socket = io.connect('http://localhost:3000', {
+                        path: '/socket.io',
+                     });
+
+                     $('#app').hide();
+
+                     socket.on('message', (msg) => {
+                        $('.logs').empty();
+                        $('.logs').append(msg);
+                     });
+
+                     socket.on('qr', (src) => {
+                        $('#app').show();
+                        $('#qrcode').attr('src', src);
+                     });
+
+                     socket.on('ready', (src) => {
+                        $('#app').hide();
+                        $('.logs').append(msg);
+                     });
+
+                     socket.on('authenticated', (src) => {
+                        $('#app').hide();
+                     });
+                  });
+               </script>
+            </div>
+         </div>
       </div>
-
-      <script
-         src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"
-         integrity="sha512-STof4xm1wgkfm7heWqFJVn58Hm3EtS31XFaagaa8VMReCXAkQnJZ+jEy8PCC/iT18dFy95WcExNHFTqLyp72eQ=="
-         crossorigin="anonymous"
-         referrerpolicy="no-referrer"
-      ></script>
-      <script
-         src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.min.js"
-         integrity="sha512-HTENHrkQ/P0NGDFd5nk6ibVtCkcM7jhr2c7GyvXp5O+4X6O5cQO9AhqFzM+MdeBivsX7Hoys2J7pp2wdgMpCvw=="
-         crossorigin="anonymous"
-         referrerpolicy="no-referrer"
-      ></script>
-      <script>
-         $(document).ready(function () {
-            var socket = io.connect('http://localhost:3000', {
-               path: '/socket.io',
-            });
-
-            socket.on('message', (msg) => {
-               $('.logs').append($('<li>').text(msg));
-            });
-
-            socket.on('qr', (src) => {
-               $('#qrcode').attr('src', src);
-            });
-
-            socket.on('ready', (src) => {
-               $('#qrcode').hide();
-            });
-
-            socket.on('authenticated', (src) => {
-               $('#qrcode').hide();
-            });
-         });
-      </script>
    </body>
 </html>
