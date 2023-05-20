@@ -38,7 +38,6 @@
                <script>
                   $(document).ready(function () {
                      var host = $.extend({}, location).host;
-                     console.log(host);
 
                      var socket = io.connect(host, {
                         path: '/socket.io',
