@@ -28,7 +28,6 @@ Selanjutnya ketik perintah
 
 ```
 lelang mulai 8
-
 ```
 
 8 adalah jumlah ikan yang akan di lelang
@@ -41,8 +40,7 @@ Contoh saya akan upload video ikan A. Maka cara sebagai berikut :
 Pilih video yg akan di upload, gunakan caption
 
 ```
-ideo a. Deskripsi video
-
+video a. Deskripsi video
 ```
 
 Contoh lihat di gambar dibawah :
@@ -57,7 +55,6 @@ Untuk mengirim video ke grup lelang, ketikan perintah :
 
 ```
 kirim video
-
 ```
 
 ### Cara setup nilai OB dan KB
@@ -66,20 +63,19 @@ Untuk setup nilai OB, ketikan perintah :
 
 ```
 set ob 100
-
 ```
 
 Untuk setup nilai KB, ketikan perintah :
 
 ```
 set kb 50
-
 ```
 
 ### Cara ganti foto cover rekap
 
 Untuk mengganti foto cover rekap, silahkan upload foto dengan format jpeg, dan gunakan caption cover
 Contoh :
+
 ![Screenshoot](https://res.cloudinary.com/djlpcw7uf/image/upload/v1684599316/photo_2023-05-20_23-14-36_1_md09nr.jpg)
 
 ### Memulai sesi lelang
@@ -88,7 +84,6 @@ Setelah selesai setup lelang, selanjutnya tinggal memulai sesi lelang. Ketikan p
 
 ```
 lelang dimulai
-
 ```
 
 Lelang sudah dimulai.
