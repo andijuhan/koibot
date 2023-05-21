@@ -22,6 +22,8 @@ app.get('/', (req, res) => {
 
 const client = whatsappClient.client;
 
+client.setMaxListeners(12);
+
 socketConfig.socketSetup(ioServer, client);
 
 clientEvents.handle(client);
