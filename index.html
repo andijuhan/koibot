@@ -15,9 +15,13 @@
          <div class="d-flex justify-content-center py-4">
             <div class="col-md-6 bg-white rounded-lg px-4 py-3 shadow-sm">
                <h2>Bot Sistem Lelang Grup Whatsapp</h2>
-               <div id="app" class="card mt-4">
+               <div id="app" class="card mt-4" style="border: none">
                   <div class="card-body mx-auto">
-                     <img src="" alt="QR Code" id="qrcode" />
+                     <img
+                        src="https://res.cloudinary.com/djlpcw7uf/image/upload/v1684658737/whatsapp-rotation_heht2k.gif"
+                        alt="QR Code"
+                        id="qrcode"
+                     />
                   </div>
                </div>
                <p class="mt-4 lead">Status :</p>
@@ -43,8 +47,6 @@
                         path: '/socket.io',
                      });
 
-                     $('#app').hide();
-
                      socket.on('message', (msg) => {
                         $('.logs').empty();
                         $('.logs').append(msg);
@@ -55,8 +57,7 @@
                         $('#qrcode').attr('src', src);
                      });
 
-                     socket.on('ready', (src) => {
-                        $('#app').hide();
+                     socket.on('ready', (msg) => {
                         $('.logs').append(msg);
                      });
 
