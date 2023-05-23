@@ -19,6 +19,10 @@ const handler = (client) => {
 
          if (config.isAuctionStarting) {
             auctionLib.setAuctionClosing(client);
+         } else {
+            console.log(
+               'waktu clossing tidak di set karena status lelang closed'
+            );
          }
       }
    });

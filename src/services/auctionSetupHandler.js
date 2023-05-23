@@ -57,7 +57,7 @@ const setupVideo = async (client, message, chats) => {
       //simpan info media ke database
 
       const path = './upload/videos/' + config.setMedia + ext[1];
-      console.log(path);
+
       const desc = message.body.replace(mediaCode, `*${mediaCode}*`);
 
       db.setMediaPath(path, desc, config.setMedia);
@@ -183,7 +183,7 @@ const auctionSetup = (client, message, chats) => {
             );
             client.sendMessage(
                message.from,
-               '*[BOT]* Jangan lupa upload video & deskripsi Ikan yg akan di lelang.'
+               '*[BOT]* Jangan lupa upload video & deskripsi Ikan lelang.'
             );
             //send message to group
             client.sendMessage(config.groupId, config.INFO);
