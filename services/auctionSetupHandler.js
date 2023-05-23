@@ -1,9 +1,9 @@
-const config = require('../config/auctionConfig');
-const utils = require('../helpers/utils');
-const db = require('../helpers/database');
+const config = require('../config/auction');
+const utils = require('../utils');
+const db = require('../utils/database');
 const fs = require('fs');
 const { MessageMedia } = require('whatsapp-web.js');
-const auctionLib = require('./auctionLib');
+const auctionLib = require('./auctionHelpers');
 
 const testBot = (message) => {
    message.reply('Bot sedang aktif.');
@@ -54,7 +54,7 @@ const setupVideo = async (client, message, chats) => {
       //dapatkan ekstensi media
       const ext = attachmentData.mimetype.split('/');
       //simpan info media ke database
-      const path = './upload/' + config.setMedia + ext[1];
+      const path = './upload/videos/' + config.setMedia + ext[1];
       const desc = message.body.replace(mediaCode, `*${mediaCode}*`);
 
       db.setMediaPath(path, desc, config.setMedia);
@@ -150,7 +150,7 @@ const auctionSetup = (client, message, chats) => {
 
             //bersihkan file
 
-            const folder = './upload/';
+            const folder = './upload/videos/';
 
             fs.readdir(folder, (err, files) => {
                if (err) throw err;
@@ -210,7 +210,7 @@ const setRecapImage = async (client, message, chats) => {
 
       if (ext[1] === 'jpeg') {
          //simpan info media ke database
-         const path = `./images/cover.jpg`;
+         const path = `./upload/images/cover.jpg`;
          //simpan ke server
          fs.writeFileSync(path, attachmentData.data, 'base64', function (err) {
             if (err) {

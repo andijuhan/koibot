@@ -10,6 +10,7 @@ let count = 0;
 let addExtraTime = false;
 let setMedia;
 let auctionNumber;
+
 const auctionGroups = ["PRATAMA MO' KOI (Auction)", '*MAHKOTA KOI AUCTION*'];
 const bankAccount = 'BCA a/n Hanny Wijaya 3440523365';
 const adminContact = 'wa.me/6282214871668';

@@ -1,10 +1,10 @@
 /* eslint-disable no-undef */
-const config = require('../config/auctionConfig');
-const utils = require('../helpers/utils');
-const db = require('../helpers/database');
-const auctionLib = require('./auctionLib');
+const config = require('../config/auction');
+const utils = require('../utils');
+const db = require('../utils/database');
+const auctionLib = require('./auctionHelpers');
 
-const handle = (client) => {
+const handler = (client) => {
    client.on('ready', async () => {
       console.log('Mempersiapkan data lelang');
       const data = await db.getSetting();
@@ -32,10 +32,7 @@ const handle = (client) => {
 
    client.on('disconnected', (reason) => {
       console.log('Client was logged out', reason);
-      return process.exit(1);
    });
 };
 
-module.exports = {
-   handle,
-};
+module.exports = handler;

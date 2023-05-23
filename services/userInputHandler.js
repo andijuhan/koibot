@@ -1,9 +1,9 @@
-const db = require('../helpers/database');
-const config = require('../config/auctionConfig');
-const utils = require('../helpers/utils');
+const db = require('../utils/database');
+const config = require('../config/auction');
+const utils = require('../utils');
 const fs = require('fs');
 const { MessageMedia } = require('whatsapp-web.js');
-const auctionLib = require('./auctionLib');
+const auctionHelpers = require('./auctionHelpers');
 
 const checkVideo = async (client, message, chats) => {
    const messageLwcase = message.body.toLocaleLowerCase();
@@ -43,7 +43,7 @@ const checkVideo = async (client, message, chats) => {
    }
 };
 
-const OBHandle = async (client, message, chats) => {
+const ob = async (client, message, chats) => {
    const messageLwcase = message.body.toLocaleLowerCase();
    if (
       messageLwcase.includes('ob') &&
@@ -84,7 +84,7 @@ const OBHandle = async (client, message, chats) => {
          }
          db.allOb(config.OB, message.rawData.notifyName, message.author);
          message.reply('*[BOT]* Bid *SAH*. Trimakasih 🤝');
-         auctionLib.recapBid(client, config.groupId);
+         auctionHelpers.recapBid(client, config.groupId);
          return;
       }
 
@@ -109,7 +109,7 @@ const OBHandle = async (client, message, chats) => {
 
          if (config.extraTime) {
             //jalankan sekali
-            auctionLib.countdown(client);
+            auctionHelpers.countdown(client);
          }
 
          if (checkBid?.length > 0) {
@@ -129,12 +129,12 @@ const OBHandle = async (client, message, chats) => {
       });
       //send rekap
       if (codeArr.length > 0) {
-         auctionLib.recapBid(client, config.groupId);
+         auctionHelpers.recapBid(client, config.groupId);
       }
    }
 };
 
-const KBHandle = async (client, message, chats) => {
+const kb = async (client, message, chats) => {
    const messageLwcase = message.body.toLocaleLowerCase();
    if (
       messageLwcase.includes('kb') &&
@@ -197,12 +197,12 @@ const KBHandle = async (client, message, chats) => {
                }
             });
             message.reply('*[BOT]* Bid *SAH*. Trimakasih 🤝');
-            auctionLib.recapBid(client, config.groupId);
+            auctionHelpers.recapBid(client, config.groupId);
             return;
          }
 
          message.reply('*[BOT]* Bid *SAH*. Trimakasih 🤝');
-         auctionLib.recapBid(client, config.groupId);
+         auctionHelpers.recapBid(client, config.groupId);
          return;
       }
 
@@ -226,7 +226,7 @@ const KBHandle = async (client, message, chats) => {
 
          if (config.extraTime) {
             //jalankan sekali
-            auctionLib.countdown(client);
+            auctionHelpers.countdown(client);
          }
 
          if (getDataRecap?.length > 0) {
@@ -257,12 +257,12 @@ const KBHandle = async (client, message, chats) => {
       });
       //send rekap
       if (codeArr.length > 0) {
-         auctionLib.recapBid(client, config.groupId);
+         auctionHelpers.recapBid(client, config.groupId);
       }
    }
 };
 
-const jumpBidHandle = (client, message, chats) => {
+const jb = (client, message, chats) => {
    const messageLwcase = message.body.toLocaleLowerCase();
    const messageNoSpace = messageLwcase.split(' ').join('');
    //dapatkan nilai jump bid dari chat
@@ -298,7 +298,7 @@ const jumpBidHandle = (client, message, chats) => {
 
             if (config.extraTime) {
                //jalankan sekali
-               auctionLib.countdown(client);
+               auctionHelpers.countdown(client);
             }
 
             if (getDataRecap.length > 0) {
@@ -335,7 +335,7 @@ const jumpBidHandle = (client, message, chats) => {
             }
          });
          if (codeArr.length > 0) {
-            auctionLib.recapBid(client, config.groupId);
+            auctionHelpers.recapBid(client, config.groupId);
          }
       }
    }
@@ -378,7 +378,7 @@ const helper = (client, message, chats) => {
 
    if (messageLwcase === 'info rekap' || messageLwcase === 'rekap') {
       if (config.isAuctionStarting) {
-         auctionLib.recapBid(client, config.groupId);
+         auctionHelpers.recapBid(client, config.groupId);
       } else {
          client.sendMessage(message.from, '*[BOT]* Lelang belum dimulai.');
       }
@@ -395,8 +395,8 @@ const helper = (client, message, chats) => {
 
 module.exports = {
    checkVideo,
-   OBHandle,
-   KBHandle,
-   jumpBidHandle,
+   ob,
+   kb,
+   jb,
    helper,
 };

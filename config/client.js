@@ -17,6 +17,4 @@ const client = new Client({
    authStrategy: new LocalAuth(),
 });
 
-module.exports = {
-   client,
-};
+module.exports = client;

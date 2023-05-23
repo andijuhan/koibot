@@ -1,7 +1,7 @@
-const config = require('../config/auctionConfig');
+const config = require('../config/auction');
 const cron = require('node-cron');
-const utils = require('../helpers/utils');
-const db = require('../helpers/database');
+const utils = require('../utils');
+const db = require('../utils/database');
 const fs = require('fs');
 const { MessageMedia } = require('whatsapp-web.js');
 
@@ -216,7 +216,7 @@ const recapBid = async (client) => {
       }
 
       try {
-         const path = './images/cover.jpg';
+         const path = './upload/images/cover.jpg';
          if (fs.existsSync(path)) {
             //file exists
             const media = MessageMedia.fromFilePath(path);

@@ -1,6 +1,6 @@
-const data = require('../config/auctionConfig');
+const data = require('../config/auction');
 const date = require('date-and-time');
-const config = require('../config/auctionConfig');
+const config = require('../config/auction');
 
 const getGroupId = (userChat) => {
    const groupObj = userChat
