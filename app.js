@@ -3,7 +3,7 @@ const http = require('http');
 const socketIo = require('socket.io');
 const express = require('express');
 const whatsappBotClientConfig = require('./config/client');
-const socketConfig = require('./config/socket');
+const socketClientAuth = require('./services/socketClientAuth');
 const messageServices = require('./services');
 const clientEventListenerHandler = require('./services/clientEventListenerHandler');
 
@@ -19,7 +19,7 @@ app.get('/', (req, res) => {
 
 const client = whatsappBotClientConfig;
 
-socketConfig(ioServer, client);
+socketClientAuth(ioServer, client);
 
 clientEventListenerHandler(client);
 
