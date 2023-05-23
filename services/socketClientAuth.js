@@ -1,6 +1,6 @@
 const qrcode = require('qrcode');
 
-const socketConfig = (ioServer, client) => {
+const socketClientAuth = (ioServer, client) => {
    //socket.io setup
    ioServer.on('connection', (socket) => {
       socket.emit('message', 'Connected to server');
@@ -26,4 +26,4 @@ const socketConfig = (ioServer, client) => {
    });
 };
 
-module.exports = socketConfig;
+module.exports = socketClientAuth;
