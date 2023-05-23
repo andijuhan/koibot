@@ -2,6 +2,7 @@ const config = require('../config/auction');
 const utils = require('../utils');
 const db = require('../utils/database');
 const fs = require('fs');
+
 const { MessageMedia } = require('whatsapp-web.js');
 const auctionLib = require('./auctionHelpers');
 
@@ -54,7 +55,9 @@ const setupVideo = async (client, message, chats) => {
       //dapatkan ekstensi media
       const ext = attachmentData.mimetype.split('/');
       //simpan info media ke database
+
       const path = './upload/videos/' + config.setMedia + ext[1];
+      console.log(path);
       const desc = message.body.replace(mediaCode, `*${mediaCode}*`);
 
       db.setMediaPath(path, desc, config.setMedia);
@@ -146,7 +149,6 @@ const auctionSetup = (client, message, chats) => {
       if (config.INFO.length > 20) {
          if (auctionCode.length >= 1) {
             //jalankan cron job
-            auctionLib.setAuctionClosing(client);
 
             //bersihkan file
 
@@ -250,7 +252,7 @@ const setAuctionNumber = (client, message, chats) => {
 const closeAuction = async (message, chats) => {
    const messageLwcase = message.body.toLocaleLowerCase();
    if (
-      messageLwcase === 'Status lelang ditutup' &&
+      messageLwcase === 'lelang ditutup' &&
       chats.isGroup === false &&
       utils.isAdminBot(message)
    ) {
@@ -267,6 +269,7 @@ const auctionStart = (client, message, chats) => {
       chats.isGroup === false &&
       utils.isAdminBot(message)
    ) {
+      auctionLib.setAuctionClosing(client);
       config.isAuctionStarting = db.setAuctionStatus(1);
       config.isAuctionStarting = true;
       message.reply('*[BOT]* Status lelang dimulai');

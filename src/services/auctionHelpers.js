@@ -6,30 +6,25 @@ const fs = require('fs');
 const { MessageMedia } = require('whatsapp-web.js');
 
 const setAuctionClosing = (client) => {
-   const currentHour = new Date().getHours();
+   //const currentHour = new Date().getHours();
 
-   if (currentHour < 22) {
-      console.log('Berhasil set waktu closing');
+   console.log('Berhasil set waktu closing');
 
-      cron.schedule('1 22 * * *', async function () {
-         console.log('Extra Time');
-         config.extraTime = true;
-         if (config.extraTime) {
-            //jalankan hitung mundur 10 menit
-            countdown(client);
-         }
+   cron.schedule('1 22 * * *', async function () {
+      console.log('Extra Time');
+      config.extraTime = true;
+      if (config.extraTime) {
+         //jalankan hitung mundur 10 menit
+         countdown(client);
+      }
 
-         //kirim notif ke grup
-         client.sendMessage(
-            config.groupId,
-            '*[BOT]* Memasuki masa extra time.'
-         );
-         client.sendMessage(
-            config.groupId,
-            '*[BOT]* Tidak ada bid *closed* jam 22:11.'
-         );
-      });
-   }
+      //kirim notif ke grup
+      client.sendMessage(config.groupId, '*[BOT]* Memasuki masa extra time.');
+      client.sendMessage(
+         config.groupId,
+         '*[BOT]* Tidak ada bid *closed* jam 22:11.'
+      );
+   });
 };
 
 const countdown = (client) => {

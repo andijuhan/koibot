@@ -1,10 +1,9 @@
-const data = require('../config/auction');
 const date = require('date-and-time');
 const config = require('../config/auction');
 
 const getGroupId = (userChat) => {
    const groupObj = userChat
-      .filter((chat) => chat.isGroup && chat.name === data.groupName)
+      .filter((chat) => chat.isGroup && chat.name === config.groupName)
       .map((chat) => {
          return {
             id: chat.id,
