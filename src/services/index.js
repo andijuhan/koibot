@@ -11,39 +11,43 @@ const messageServices = async (client, message) => {
    if (chats.isGroup === false && messageLwcase.includes('video')) {
       config.setMedia = await db.setMedia(mediaCode);
    }
-   //ADMIN MESSAGE COMMAND--------------------------------------------------------
-   //admin set OB
-   auctionSetupHandler.setOB(message, chats);
-   //admin set KB
-   auctionSetupHandler.setKB(message, chats);
-   //admin setup video
-   auctionSetupHandler.setupVideo(client, message, chats);
-   //admin send video to group
-   auctionSetupHandler.sendVideoToGroup(client, message, chats);
-   //admin save info lelang
-   auctionSetupHandler.setupAuctionInfo(client, message, chats);
-   //admin setup lelang
-   auctionSetupHandler.auctionSetup(client, message, chats);
-   //admin start lelang
-   auctionSetupHandler.auctionStart(client, message, chats);
-   //admin mengatur no lelang
-   auctionSetupHandler.setAuctionNumber(client, message, chats);
-   //admin mengatur foto rekap
-   auctionSetupHandler.setRecapImage(client, message, chats);
-   //admin tutup lelang paksa
-   auctionSetupHandler.closeAuction(message, chats);
+   //ADMIN MESSAGE COMMAND HANDLER--------------------------------------------------------
+   //admin can setup auction bot using message
 
-   //USER MESSAGE COMMAND--------------------------------------------------------
+   //admin set OB
+   auctionSetupHandler.setOB(message);
+   //admin set KB
+   auctionSetupHandler.setKB(message);
+   //admin setup video
+   auctionSetupHandler.setupVideo(client, message);
+   //admin send video to group
+   auctionSetupHandler.sendVideoToGroup(client, message);
+   //admin save info lelang
+   auctionSetupHandler.setupAuctionInfo(client, message);
+   //admin setup lelang
+   auctionSetupHandler.auctionSetup(client, message);
+   //admin start lelang
+   auctionSetupHandler.auctionStart(client, message);
+   //admin mengatur no lelang
+   auctionSetupHandler.setAuctionNumber(client, message);
+   //admin mengatur foto rekap
+   auctionSetupHandler.setRecapImage(client, message);
+   //admin tutup lelang paksa
+   auctionSetupHandler.closeAuction(message);
+
+   //USER MESSAGE COMMAND HANDLER--------------------------------------------------------
+   //user can bid (ob, kb, jb), check video, and help
+
    //user check video
-   userInputHandler.checkVideo(client, message, chats);
+   userInputHandler.checkVideo(client, message);
    //user OB
-   userInputHandler.ob(client, message, chats);
+   userInputHandler.ob(client, message);
    //user KB
-   userInputHandler.kb(client, message, chats);
+   userInputHandler.kb(client, message);
    //user jump bid
-   userInputHandler.jb(client, message, chats);
+   userInputHandler.jb(client, message);
    //user helper
-   userInputHandler.helper(client, message, chats);
+   userInputHandler.helper(client, message);
 };
 
 module.exports = messageServices;

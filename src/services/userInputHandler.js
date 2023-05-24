@@ -5,7 +5,8 @@ const fs = require('fs');
 const { MessageMedia } = require('whatsapp-web.js');
 const auctionHelpers = require('./auctionHelpers');
 
-const checkVideo = async (client, message, chats) => {
+const checkVideo = async (client, message) => {
+   const chats = await message.getChat();
    const messageLwcase = message.body.toLocaleLowerCase();
 
    if (messageLwcase.includes('video') && messageLwcase.length < 8) {
@@ -43,7 +44,8 @@ const checkVideo = async (client, message, chats) => {
    }
 };
 
-const ob = async (client, message, chats) => {
+const ob = async (client, message) => {
+   const chats = await message.getChat();
    const messageLwcase = message.body.toLocaleLowerCase();
    if (
       messageLwcase.includes('ob') &&
@@ -134,7 +136,8 @@ const ob = async (client, message, chats) => {
    }
 };
 
-const kb = async (client, message, chats) => {
+const kb = async (client, message) => {
+   const chats = await message.getChat();
    const messageLwcase = message.body.toLocaleLowerCase();
    if (
       messageLwcase.includes('kb') &&
@@ -262,7 +265,8 @@ const kb = async (client, message, chats) => {
    }
 };
 
-const jb = (client, message, chats) => {
+const jb = async (client, message) => {
+   const chats = await message.getChat();
    const messageLwcase = message.body.toLocaleLowerCase();
    const messageNoSpace = messageLwcase.split(' ').join('');
    //dapatkan nilai jump bid dari chat
@@ -341,7 +345,8 @@ const jb = (client, message, chats) => {
    }
 };
 
-const helper = (client, message, chats) => {
+const helper = async (client, message) => {
+   const chats = await message.getChat();
    const messageLwcase = message.body.toLocaleLowerCase();
    if (messageLwcase === 'bantuan' && chats.isGroup) {
       const head = '- *DAFTAR COMMAND BOT LELANG* -';

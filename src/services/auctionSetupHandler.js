@@ -4,13 +4,14 @@ const db = require('../utils/database');
 const fs = require('fs');
 
 const { MessageMedia } = require('whatsapp-web.js');
-const auctionLib = require('./auctionHelpers');
+const auctionHelpers = require('./auctionHelpers');
 
 const testBot = (message) => {
    message.reply('Bot sedang aktif.');
 };
 
-const setOB = (message, chats) => {
+const setOB = async (message) => {
+   const chats = await message.getChat();
    const messageLwcase = message.body.toLocaleLowerCase();
    if (
       messageLwcase.includes('set ob') &&
@@ -26,7 +27,8 @@ const setOB = (message, chats) => {
    }
 };
 
-const setKB = (message, chats) => {
+const setKB = async (message) => {
+   const chats = await message.getChat();
    const messageLwcase = message.body.toLocaleLowerCase();
    if (
       messageLwcase.includes('set kb') &&
@@ -41,7 +43,8 @@ const setKB = (message, chats) => {
    }
 };
 
-const setupVideo = async (client, message, chats) => {
+const setupVideo = async (client, message) => {
+   const chats = await message.getChat();
    const messageLwcase = message.body.toLocaleLowerCase();
    if (
       config.setMedia !== false &&
@@ -79,7 +82,8 @@ const setupVideo = async (client, message, chats) => {
    }
 };
 
-const sendVideoToGroup = async (client, message, chats) => {
+const sendVideoToGroup = async (client, message) => {
+   const chats = await message.getChat();
    const messageLwcase = message.body.toLocaleLowerCase();
    if (
       messageLwcase.includes('kirim video') &&
@@ -112,7 +116,8 @@ const sendVideoToGroup = async (client, message, chats) => {
    }
 };
 
-const setupAuctionInfo = async (client, message, chats) => {
+const setupAuctionInfo = async (client, message) => {
+   const chats = await message.getChat();
    if (
       message.body.includes('#LELANG') &&
       chats.isGroup === false &&
@@ -134,7 +139,8 @@ const setupAuctionInfo = async (client, message, chats) => {
    }
 };
 
-const auctionSetup = (client, message, chats) => {
+const auctionSetup = async (client, message) => {
+   const chats = await message.getChat();
    const messageLwcase = message.body.toLocaleLowerCase();
    if (
       messageLwcase.includes('lelang mulai') &&
@@ -148,10 +154,7 @@ const auctionSetup = (client, message, chats) => {
 
       if (config.INFO.length > 20) {
          if (auctionCode.length >= 1) {
-            //jalankan cron job
-
             //bersihkan file
-
             const folder = './upload/videos/';
 
             fs.readdir(folder, (err, files) => {
@@ -162,7 +165,7 @@ const auctionSetup = (client, message, chats) => {
                }
             });
 
-            //bersihkan tabel
+            //bersihkan tabel rekap & reset tabel nedia
 
             db.cleanDataRecap();
             db.resetMedia(auctionCode);
@@ -198,7 +201,8 @@ const auctionSetup = (client, message, chats) => {
    }
 };
 
-const setRecapImage = async (client, message, chats) => {
+const setRecapImage = async (client, message) => {
+   const chats = await message.getChat();
    const messageLwcase = message.body.toLocaleLowerCase();
    if (
       messageLwcase === 'cover' &&
@@ -229,7 +233,8 @@ const setRecapImage = async (client, message, chats) => {
    }
 };
 
-const setAuctionNumber = (client, message, chats) => {
+const setAuctionNumber = async (client, message) => {
+   const chats = await message.getChat();
    const messageLwcase = message.body.toLocaleLowerCase();
    if (
       messageLwcase.includes('#lelang') &&
@@ -249,7 +254,8 @@ const setAuctionNumber = (client, message, chats) => {
    }
 };
 
-const closeAuction = async (message, chats) => {
+const closeAuction = async (message) => {
+   const chats = await message.getChat();
    const messageLwcase = message.body.toLocaleLowerCase();
    if (
       messageLwcase === 'lelang ditutup' &&
@@ -262,14 +268,15 @@ const closeAuction = async (message, chats) => {
    }
 };
 
-const auctionStart = (client, message, chats) => {
+const auctionStart = async (client, message) => {
+   const chats = await message.getChat();
    const messageLwcase = message.body.toLocaleLowerCase();
    if (
       messageLwcase === 'lelang dimulai' &&
       chats.isGroup === false &&
       utils.isAdminBot(message)
    ) {
-      auctionLib.setAuctionClosing(client);
+      auctionHelpers.setAuctionClosing(client);
       config.isAuctionStarting = db.setAuctionStatus(1);
       config.isAuctionStarting = true;
       message.reply('*[BOT]* Status lelang dimulai');

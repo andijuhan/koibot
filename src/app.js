@@ -17,12 +17,13 @@ app.get('/', (req, res) => {
    res.sendFile('index.html', { root: __dirname });
 });
 
+//konfigurasi client whatsapp bot
 const client = whatsappBotClientConfig;
-
+//authentikasi client QRCode via web browser
 socketClientAuth(ioServer, client);
-
+//menangani client event handler selain pesan
 clientEventListenerHandler(client);
-
+//bot handler untuk menangani pesan dari user/admin
 client.on('message', async (message) => {
    messageServices(client, message);
 });
