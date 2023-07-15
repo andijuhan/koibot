@@ -12,7 +12,8 @@ let setMedia;
 let auctionNumber;
 
 const auctionGroups = ["PRATAMA MO' KOI (Auction)", '*MAHKOTA KOI AUCTION*'];
-const bankAccount = 'BCA a/n Hanny Wijaya 3440523365';
+const bankAccount =
+   'BCA a/n Mumu abdul muti 2990769934, BRI a/n Mumu abdul muti 427601020407538';
 const adminContact = 'wa.me/6282214871668';
 
 const jumpBidPrice = [
@@ -29,14 +30,9 @@ const jumpBidPrice = [
 const groupName =
    process.env.NODE_ENV === 'development'
       ? 'Rajabot Testing'
-      : auctionGroups[0];
+      : auctionGroups[1];
 
-const admins = [
-   '6281324046606@c.us',
-   '6282214871668@c.us',
-   '6287715817912@c.us',
-   '6282126569022@c.us',
-];
+const admins = ['6281324046606@c.us'];
 
 module.exports = {
    jumpBidPrice,

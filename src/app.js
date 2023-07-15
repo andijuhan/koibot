@@ -8,6 +8,7 @@ const messageServices = require('./services');
 const clientEventListenerHandler = require('./services/clientEventListenerHandler');
 
 process.env.TZ = 'Asia/Bangkok';
+console.log(new Date());
 
 const app = express();
 const server = http.createServer(app);
