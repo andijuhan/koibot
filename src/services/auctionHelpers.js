@@ -9,6 +9,10 @@ const setAuctionClosing = (client) => {
    //const currentHour = new Date().getHours();
 
    console.log('Berhasil set waktu closing');
+   //pastikan dulu tidak ada cron job yg berjalan
+   if (utils.task !== null) {
+      utils.task.stop();
+   }
 
    utils.task = cron.schedule('1 22 * * *', async function () {
       console.log('Extra Time');
@@ -90,7 +94,9 @@ const timer = async (client, groupId) => {
 
       config.addExtraTime = false;
       //jika lelang selesai, matikan cron job
-      utils.task.stop();
+      if (utils.task !== null) {
+         utils.task.stop();
+      }
    } else {
       if (config.count === 9) {
          client.sendMessage(
