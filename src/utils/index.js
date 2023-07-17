@@ -46,7 +46,7 @@ const isAdminBot = (message) => {
 };
 
 //untuk menyimpan instance cron job
-let task = null;
+let task;
 
 module.exports = {
    getGroupId,
