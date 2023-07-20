@@ -45,14 +45,10 @@ const isAdminBot = (message) => {
    return adminBot;
 };
 
-//untuk menyimpan instance cron job
-let task;
-
 module.exports = {
    getGroupId,
    currentDateTime,
    generateCode,
    addSomeMinutes,
    isAdminBot,
-   task,
 };

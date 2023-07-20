@@ -11,8 +11,9 @@ const setAuctionClosing = (client) => {
    console.log('Berhasil set waktu closing');
    //pastikan dulu tidak ada cron job yg berjalan
 
-   utils.task = cron.schedule('1 22 * * *', async function () {
+   const cronJob = cron.schedule('1 22 * * *', async function () {
       console.log('Extra Time');
+
       config.extraTime = true;
       if (config.extraTime) {
          //jalankan hitung mundur 10 menit
@@ -25,6 +26,9 @@ const setAuctionClosing = (client) => {
          config.groupId,
          '*[BOT]* Tidak ada bid *closed* jam 22:11.'
       );
+
+      //stop cron job
+      cronJob.stop();
    });
 };
 
@@ -90,8 +94,6 @@ const timer = async (client, groupId) => {
       });
 
       config.addExtraTime = false;
-      //jika lelang selesai, matikan cron job
-      utils.task.stop();
    } else {
       if (config.count === 9) {
          client.sendMessage(

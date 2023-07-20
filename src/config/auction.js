@@ -1,4 +1,5 @@
 /* eslint-disable no-undef */
+require('dotenv').config();
 
 let OB = 100;
 let KB = 50;
@@ -11,11 +12,6 @@ let addExtraTime = false;
 let setMedia;
 let auctionNumber;
 
-const auctionGroups = ["PRATAMA MO' KOI (Auction)", '*MAHKOTA KOI AUCTION*'];
-const bankAccount =
-   'BCA a/n Mumu abdul muti 2990769934, BRI a/n Mumu abdul muti 427601020407538';
-const adminContact = 'wa.me/6282214871668';
-
 const jumpBidPrice = [
    100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400,
    1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600, 2700,
@@ -27,12 +23,14 @@ const jumpBidPrice = [
    9300, 9400, 9500, 9600, 9700, 9800, 9900, 10000,
 ];
 
-const groupName =
-   process.env.NODE_ENV === 'development'
-      ? 'Rajabot Testing'
-      : auctionGroups[1];
+const auctionGroups = process.env.WA_GROUP;
+const bankAccount = process.env.BACNK_ACCOUNT;
+const adminContact = process.env.ADMIN_CONTACT;
 
-const admins = ['6281324046606@c.us'];
+const groupName =
+   process.env.NODE_ENV === 'development' ? 'Rajabot Testing' : auctionGroups;
+
+const admins = process.env.ADMIN_BOT;
 
 module.exports = {
    jumpBidPrice,
