@@ -30,7 +30,7 @@ const adminContact = process.env.ADMIN_CONTACT;
 const groupName =
    process.env.NODE_ENV === 'development' ? 'Rajabot Testing' : auctionGroups;
 
-const admins = process.env.ADMIN_BOT;
+const admins = [process.env.ADMIN_BOT];
 
 module.exports = {
    jumpBidPrice,
