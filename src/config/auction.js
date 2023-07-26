@@ -32,7 +32,7 @@ const groupName =
 
 const admins = [process.env.ADMIN_BOT];
 
-let task = null;
+let task;
 
 module.exports = {
    task,
