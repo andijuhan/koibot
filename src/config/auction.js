@@ -32,7 +32,10 @@ const groupName =
 
 const admins = [process.env.ADMIN_BOT];
 
+let task = null;
+
 module.exports = {
+   task,
    jumpBidPrice,
    groupName,
    admins,
