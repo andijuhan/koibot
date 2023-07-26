@@ -10,7 +10,6 @@ const setAuctionClosing = (client) => {
 
    console.log('Berhasil set waktu closing');
    //pastikan dulu tidak ada cron job yg berjalan
-   config.task.stop();
 
    config.task = cron.schedule('1 22 * * *', async function () {
       console.log('Extra Time');
