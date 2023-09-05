@@ -161,7 +161,7 @@ const addAuctionItem = async (client, message) => {
       //validasi code
       if (!config.auctionCode.includes(code.toUpperCase())) {
          config.auctionCode.push(code.toUpperCase());
-         console.log(config.auctionCode);
+
          db.fillRecap(code.toUpperCase());
          db.fillMedia(code);
          client.sendMessage(
