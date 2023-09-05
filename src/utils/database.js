@@ -147,6 +147,14 @@ const setClosingDate = async (day) => {
    await pool.execute('UPDATE `setting` SET `closing_date` = ?', [day]);
 };
 
+const setOB = async (ob) => {
+   await pool.execute('UPDATE `setting` SET `ob` = ?', [ob]);
+};
+
+const setKB = async (kb) => {
+   await pool.execute('UPDATE `setting` SET `kb` = ?', [kb]);
+};
+
 module.exports = {
    setMedia,
    setMediaPath,
@@ -166,4 +174,6 @@ module.exports = {
    setAuctionNumber,
    fillMedia,
    setClosingDate,
+   setOB,
+   setKB,
 };

@@ -17,6 +17,8 @@ const handler = (client) => {
       config.groupId = utils.getGroupId(userChat);
 
       if (data !== false) {
+         config.OB = data[0].ob;
+         config.KB = data[0].kb;
          config.isAuctionStarting = data[0].auction_status;
          config.closingDate = data[0].closing_date;
          config.INFO = data[0].auction_info;

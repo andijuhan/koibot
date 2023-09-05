@@ -21,6 +21,7 @@ const setOB = async (message) => {
       const messageLwcase = message.body.toLocaleLowerCase();
       let setOb = messageLwcase.match(/(\d+)/);
       if (setOb) {
+         db.setOB(Number(setOb[0]));
          config.OB = Number(setOb[0]);
          message.reply(`Berhasil setting OB : ${config.OB}`);
       }
@@ -37,6 +38,7 @@ const setKB = async (message) => {
    ) {
       let setKb = messageLwcase.match(/(\d+)/);
       if (setKb) {
+         db.setKB(setKb[0]);
          config.KB = Number(setKb[0]);
          message.reply(`Berhasil setting KB : ${config.KB}`);
       }
@@ -209,11 +211,15 @@ const auctionSetup = async (client, message) => {
             config.addExtraTime = false;
             config.extraTime = false;
 
-            //tambah default closing date
+            //set default closing date
             const currentDate = new Date();
             const day = String(currentDate.getDate()).padStart(2, '0');
             const closingDate = parseInt(day, 10).toString();
             db.setClosingDate(closingDate);
+
+            //set default ob kb
+            db.setOB(100);
+            db.setKB(50);
 
             //insert kode ikan
             auctionCode.map((item, index) => {
