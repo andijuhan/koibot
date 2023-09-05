@@ -32,6 +32,10 @@ const messageServices = async (client, message) => {
    auctionSetupHandler.setAuctionNumber(client, message);
    //admin mengatur foto rekap
    auctionSetupHandler.setRecapImage(client, message);
+   //admin mengatur tanggal closing lelang
+   auctionSetupHandler.setAuctionClosingDate(client, message);
+   //admin menambah item lelang baru
+   auctionSetupHandler.addAuctionItem(client, message);
    //admin tutup lelang paksa
    auctionSetupHandler.closeAuction(message);
 

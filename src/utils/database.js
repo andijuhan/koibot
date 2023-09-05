@@ -53,11 +53,11 @@ const getAllMediaInfo = async () => {
 };
 
 const cleanDataRecap = async () => {
-   await pool.query('DELETE FROM `recap`');
+   await pool.query('TRUNCATE TABLE `recap`');
 };
 
 const resetMedia = async (codes) => {
-   await pool.execute('DELETE FROM `media`');
+   await pool.execute('TRUNCATE TABLE `media`');
 
    codes.map(async (item, index) => {
       await pool.execute('INSERT INTO media (command, reply) VALUES (?, ?)', [
@@ -65,6 +65,13 @@ const resetMedia = async (codes) => {
          `${codes[index].toLocaleLowerCase()}.`,
       ]);
    });
+};
+
+const fillMedia = async (code) => {
+   await pool.execute('INSERT INTO media (command, reply) VALUES (?, ?)', [
+      `video ${code.toLocaleLowerCase()}`,
+      `${code.toLocaleLowerCase()}.`,
+   ]);
 };
 
 const fillRecap = async (code) => {
@@ -136,6 +143,10 @@ const setAuctionNumber = async (auctionNumber) => {
    ]);
 };
 
+const setClosingDate = async (day) => {
+   await pool.execute('UPDATE `setting` SET `closing_date` = ?', [day]);
+};
+
 module.exports = {
    setMedia,
    setMediaPath,
@@ -153,4 +164,6 @@ module.exports = {
    setAuctionInfo,
    setAuctionStatus,
    setAuctionNumber,
+   fillMedia,
+   setClosingDate,
 };

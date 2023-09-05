@@ -139,6 +139,39 @@ const setupAuctionInfo = async (client, message) => {
    }
 };
 
+const addAuctionItem = async (client, message) => {
+   const chats = await message.getChat();
+   const messageLwcase = message.body.toLocaleLowerCase();
+
+   if (
+      messageLwcase.includes('tambah') &&
+      chats.isGroup === false &&
+      utils.isAdminBot(message)
+   ) {
+      const messageCommand = messageLwcase.split(' ');
+      const code = messageCommand[1];
+      const alphabeticRegex = /^[A-Z]+$/i;
+      const isCodeValid = alphabeticRegex.test(code);
+      if (!isCodeValid) {
+         client.sendMessage(message.from, '*[BOT]* Format kode salah');
+         return;
+      }
+      //validasi code
+      if (!config.auctionCode.includes(code.toUpperCase())) {
+         config.auctionCode.push(code.toUpperCase());
+         console.log(config.auctionCode);
+         db.fillRecap(code.toUpperCase());
+         db.fillMedia(code);
+         client.sendMessage(
+            message.from,
+            '*[BOT]* Berhasil menambahkan item lelang baru'
+         );
+      } else {
+         client.sendMessage(message.from, '*[BOT]* Kode sudah digunakan');
+      }
+   }
+};
+
 const auctionSetup = async (client, message) => {
    const chats = await message.getChat();
    const messageLwcase = message.body.toLocaleLowerCase();
@@ -150,7 +183,8 @@ const auctionSetup = async (client, message) => {
       //kode ikan
       const messageToArr = message.body.split(' ');
       const codes = Number(messageToArr[2]);
-      const auctionCode = utils.generateCode(Number(codes));
+      config.auctionCode = utils.generateCode(Number(codes));
+      const auctionCode = config.auctionCode;
 
       if (config.INFO.length > 20) {
          if (auctionCode.length >= 1) {
@@ -175,6 +209,12 @@ const auctionSetup = async (client, message) => {
             config.addExtraTime = false;
             config.extraTime = false;
 
+            //tambah default closing date
+            const currentDate = new Date();
+            const day = String(currentDate.getDate()).padStart(2, '0');
+            const closingDate = parseInt(day, 10).toString();
+            db.setClosingDate(closingDate);
+
             //insert kode ikan
             auctionCode.map((item, index) => {
                db.fillRecap(auctionCode[index]);
@@ -197,6 +237,36 @@ const auctionSetup = async (client, message) => {
          }
       } else {
          message.reply('*[BOT]* Silahkan buat *Info Lelang* terlebih dahulu');
+      }
+   }
+};
+
+const setAuctionClosingDate = async (client, message) => {
+   const chats = await message.getChat();
+   const messageLwcase = message.body.toLocaleLowerCase();
+
+   if (
+      messageLwcase.includes('closing') &&
+      chats.isGroup === false &&
+      utils.isAdminBot(message)
+   ) {
+      //pecah menjadi array
+      //dapatkan array elemen ke 2
+      //validasi angka 1-31
+      const messageCommand = messageLwcase.split(' ');
+      const closingDate = messageCommand[1];
+
+      const closingDateNumber = parseInt(closingDate, 10);
+
+      if (closingDateNumber >= 1 && closingDateNumber <= 31) {
+         db.setClosingDate(closingDate);
+         config.closingDate = closingDate;
+         client.sendMessage(
+            message.from,
+            `*[BOT]* Berhasil setting tanggal closing lelang - ${config.closingDate}`
+         );
+      } else {
+         client.sendMessage(message.from, `*[BOT]* Format tanggal salah`);
       }
    }
 };
@@ -299,4 +369,6 @@ module.exports = {
    closeAuction,
    setAuctionNumber,
    setRecapImage,
+   setAuctionClosingDate,
+   addAuctionItem,
 };

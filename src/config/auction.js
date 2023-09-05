@@ -11,6 +11,8 @@ let count = 0;
 let addExtraTime = false;
 let setMedia;
 let auctionNumber;
+let auctionCode = [];
+let closingDate = '';
 
 const jumpBidPrice = [
    100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400,
@@ -51,4 +53,6 @@ module.exports = {
    bankAccount,
    adminContact,
    auctionNumber,
+   closingDate,
+   auctionCode,
 };

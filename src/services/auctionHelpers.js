@@ -11,22 +11,28 @@ const setAuctionClosing = (client) => {
    console.log('Berhasil set waktu closing');
    //pastikan dulu tidak ada cron job yg berjalan
 
-   config.task = cron.schedule('1 22 * * *', async function () {
-      console.log('Extra Time');
+   config.task = cron.schedule(
+      `1 22 ${config.closingDate} * *`,
+      async function () {
+         console.log('Extra Time');
 
-      config.extraTime = true;
-      if (config.extraTime) {
-         //jalankan hitung mundur 10 menit
-         countdown(client);
+         config.extraTime = true;
+         if (config.extraTime) {
+            //jalankan hitung mundur 10 menit
+            countdown(client);
+         }
+
+         //kirim notif ke grup
+         client.sendMessage(
+            config.groupId,
+            '*[BOT]* Memasuki masa extra time.'
+         );
+         client.sendMessage(
+            config.groupId,
+            '*[BOT]* Tidak ada bid *closed* jam 22:11.'
+         );
       }
-
-      //kirim notif ke grup
-      client.sendMessage(config.groupId, '*[BOT]* Memasuki masa extra time.');
-      client.sendMessage(
-         config.groupId,
-         '*[BOT]* Tidak ada bid *closed* jam 22:11.'
-      );
-   });
+   );
 };
 
 const countdown = (client) => {

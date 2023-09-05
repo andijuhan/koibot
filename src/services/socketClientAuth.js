@@ -14,6 +14,7 @@ const socketClientAuth = (ioServer, client) => {
       });
 
       client.on('authenticated', () => {
+         console.log('Whatsapp is authenticated');
          socket.emit('authenticated', 'Whatsapp is authenticated');
          socket.emit('message', 'Whatsapp is authenticated');
       });
