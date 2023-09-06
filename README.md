@@ -14,6 +14,12 @@ Bot ini digunakan untuk menjalankan sistem lelang di dalam grup whatsapp. Studi 
 -  Auto close lelang
 -  Notifikasi pemenang lelang
 
+## Fitur Baru
+
+-  Fitur closing lelang sesuai tanggal
+-  Fitur tambah item lelang ketika lelang sedang berjalan
+-  Nilai OB, KB sinkron ke database
+
 ## Cara setup lelang
 
 ### Setup info lelang
