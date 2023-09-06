@@ -90,6 +90,15 @@ Lelang sudah dimulai.
 
 ![Screenshoot](https://res.cloudinary.com/djlpcw7uf/image/upload/v1684599483/photo_2023-05-20_23-17-21_nnmhi0.jpg)
 
+## Change log
+
+Version 1.1.0
+
+-  Fitur closing lelang sesuai tanggal
+-  Fitur tambah item lelang ketika lelang sedang berjalan
+-  Nilai OB, KB sekarang sinkron ke database
+-  Fix bug reset rekap dan reset media
+
 ## Contact me
 
 Jika bisnis Anda ingin di automatisasi menggunakan sistem whatsapp bot. Silahkan hubungi [whatsapp link](https://bit.ly/438GhSA)
