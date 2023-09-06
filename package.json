@@ -1,5 +1,5 @@
 {
-   "name": "auction-bot",
+   "name": "koi_bot",
    "version": "1.1.0",
    "main": "script.js",
    "scripts": {
@@ -8,7 +8,7 @@
    },
    "author": "Juhandi",
    "license": "ISC",
-   "description": "Bot untuk lelang via whatsapp",
+   "description": "Bot untuk lelang ikan koi via grup whatsapp",
    "dependencies": {
       "date-and-time": "^2.4.2",
       "dotenv": "^16.0.3",
