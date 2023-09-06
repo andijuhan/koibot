@@ -211,15 +211,22 @@ const auctionSetup = async (client, message) => {
             config.addExtraTime = false;
             config.extraTime = false;
 
+            //reset status lelang
+            config.isAuctionStarting = 0;
+            db.setAuctionStatus(0);
+
             //set default closing date
             const currentDate = new Date();
             const day = String(currentDate.getDate()).padStart(2, '0');
             const closingDate = parseInt(day, 10).toString();
             db.setClosingDate(closingDate);
+            config.closingDate = closingDate;
 
             //set default ob kb
             db.setOB(100);
+            config.OB = 100;
             db.setKB(50);
+            config.KB = 50;
 
             //insert kode ikan
             auctionCode.map((item, index) => {
@@ -256,6 +263,13 @@ const setAuctionClosingDate = async (client, message) => {
       chats.isGroup === false &&
       utils.isAdminBot(message)
    ) {
+      if (config.isAuctionStarting === 1) {
+         client.sendMessage(
+            message.from,
+            `*[BOT]* Tidak bisa set tanggal closing lelang karena status lelang sedang berjalan`
+         );
+         return;
+      }
       //pecah menjadi array
       //dapatkan array elemen ke 2
       //validasi angka 1-31

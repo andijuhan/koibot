@@ -14,10 +14,14 @@ const getGroupId = (userChat) => {
 };
 
 const currentDateTime = () => {
-   const currentDate = new Date().toLocaleString('id-ID', {
+   const currentDate = new Date();
+   const month = currentDate.getMonth() + 1;
+   const year = currentDate.getFullYear();
+   const closingDate = `${year}-${month}-${config.closingDate}`;
+   const settedDate = new Date(closingDate).toLocaleString('id-ID', {
       dateStyle: 'full',
    });
-   return currentDate;
+   return settedDate;
 };
 
 const addSomeMinutes = (minutes) => {
