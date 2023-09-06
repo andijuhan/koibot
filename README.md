@@ -71,6 +71,22 @@ Untuk setup nilai KB, ketikan perintah :
 set kb 50
 ```
 
+### Cara setup tanggal closing lelang
+
+Misalkan sekarang tanggal 6. Jika ingin menjalankan lelang selama 2 hari, maka lelang akan closing tanggal 8. Ketikan perintah berikut :
+
+```
+closing 8
+```
+
+### Cara menambah item lelang baru
+
+Misalkan kode ikan saat ini adalah A, B, C, D, E. Jika ingin menambahkan item lelang baru, ketikan perintah berikut :
+
+```
+Tambah F
+```
+
 ### Cara ganti foto cover rekap
 
 Untuk mengganti foto cover rekap, silahkan upload foto dengan format jpeg, dan gunakan caption cover
