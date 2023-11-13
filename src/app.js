@@ -30,6 +30,6 @@ client.on('message', async (message) => {
 
 client.initialize();
 
-server.listen(3000, () => {
-   console.log('App running on *:', 3000);
+server.listen(8000, () => {
+   console.log('App running on *:', 8000);
 });
